@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lies Above</title>
+<script>
+(function () {
+  var id = (new URLSearchParams(location.search).get('id') || '').toLowerCase();
+  if (id && /^[a-z0-9][a-z0-9.-]*$/.test(id) && id.indexOf('..') === -1) {
+    location.replace('/' + id.split('.').join('/') + '/');
+  }
+})();
+</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:Georgia,'Times New Roman','Iowan Old Style','Palatino Linotype',serif;
+  background:#ebebeb;color:#1a1a1a;min-height:100vh;
+  display:flex;align-items:center;justify-content:center;padding:2rem;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale
+}
+.e{text-align:center;max-width:480px}
+.c{font-size:clamp(2.5rem,8vw,4rem);font-weight:400;color:#1c516c;letter-spacing:-.03em;line-height:1.1;margin-bottom:1rem}
+.d{width:48px;height:2px;background:#1c516c;margin:0 auto 1.5rem;border-radius:1px}
+p{font-size:.95rem;color:#666;line-height:1.6;letter-spacing:-.01em}
+</style>
+</head>
+<body>
+<div class="e">
+<div class="c">Lies Above</div>
+<div class="d"></div>
+<p>Scan a QR code from the book to be taken to its source.</p>
+</div>
+</body>
+</html>
