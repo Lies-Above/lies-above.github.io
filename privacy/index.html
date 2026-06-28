@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Privacy &amp; Source · Lies Above</title>
+<meta name="description" content="How the Lies Above redirector handles your data: static pages, no logs, no trackers. Read the open-source code that runs the redirector.">
+<meta name="theme-color" content="#0b0b0c">
+<meta name="robots" content="noindex">
+<style>
+:root{
+  --ink:#0b0b0c;--bg:#fff;--line:#e4e4e0;--grid:#efefea;--muted:#666;--faint:#70706c;--text:#26262a;
+  --mono:ui-monospace,'SF Mono',SFMono-Regular,'Cascadia Mono','Segoe UI Mono','Roboto Mono',Menlo,Consolas,monospace;
+  --sans:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:var(--sans);color:var(--ink);line-height:1.5;background-color:var(--bg);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:46px 46px;background-position:center top;
+  display:flex;flex-direction:column;min-height:100vh;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale
+}
+.bar{background:var(--ink);color:#fff;border-bottom:1px solid #000}
+.bar-inner{max-width:64rem;margin:0 auto;padding:.95rem clamp(1.25rem,5vw,3.5rem);display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.brand{font-family:var(--mono);font-weight:800;letter-spacing:.2em;font-size:.95rem;color:#fff;text-decoration:none}
+.bar-link{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:#b9b9b9;text-decoration:none;white-space:nowrap}
+.bar-link:hover{color:#fff}
+.crumbs{max-width:64rem;margin:0 auto;width:100%;background:var(--bg);border-inline:1px solid var(--line);border-bottom:1px solid var(--line);padding:.7rem clamp(1.25rem,5vw,3.5rem)}
+.crumbs ol{list-style:none;display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase}
+.crumbs li{display:flex;align-items:center;gap:.5rem}
+.crumbs li+li::before{content:"\203A";color:var(--faint)}
+.crumbs a{color:var(--muted);text-decoration:none;border-bottom:1px solid transparent;min-height:24px;display:inline-flex;align-items:center}
+.crumbs a:hover,.crumbs a:focus-visible{color:var(--ink);border-bottom-color:var(--ink)}
+.crumbs [aria-current="page"]{color:var(--ink)}
+.wrap{flex:1;width:100%;max-width:64rem;margin:0 auto;background:var(--bg);border-inline:1px solid var(--line);padding:clamp(2.75rem,8vw,5rem) clamp(1.25rem,5vw,3.5rem)}
+.eyebrow{font-family:var(--mono);font-size:.7rem;letter-spacing:.24em;text-transform:uppercase;color:var(--faint);margin-bottom:1.1rem}
+.t{font-family:var(--mono);font-weight:800;font-size:clamp(2.2rem,7vw,3.75rem);letter-spacing:-.02em;line-height:1.02;color:var(--ink)}
+.rule{width:48px;height:3px;background:var(--ink);margin:1.6rem 0}
+.s{font-size:1.1rem;color:var(--muted);max-width:44rem}
+.s em{font-style:italic}
+.updated{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-top:1.3rem}
+
+.facts{margin-top:1.7rem;max-width:46rem;list-style:none}
+.facts li{position:relative;padding-left:1.5rem;margin-top:.7rem;font-size:1rem;line-height:1.6;color:var(--text)}
+.facts li::before{content:"\2014";position:absolute;left:0;color:var(--ink)}
+.facts strong{color:var(--ink);font-weight:700}
+
+.cta{margin-top:2.4rem;display:flex;flex-wrap:wrap;gap:.85rem;align-items:center}
+.btn{font-family:var(--mono);font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);text-decoration:none;border:1.5px solid var(--ink);padding:.85rem 1.3rem;display:inline-flex;align-items:center;gap:.6rem;min-height:24px;transition:background .15s ease,color .15s ease}
+.btn .glyph{font-weight:700;letter-spacing:-.05em}
+.btn:hover{background:var(--ink);color:#fff}
+.btn-ghost{border-color:var(--line);color:var(--muted)}
+.btn-ghost:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+.doc{margin-top:3.4rem;counter-reset:sec}
+.sec{counter-increment:sec;border-top:1px solid var(--line);padding-top:2.1rem;margin-top:2.1rem;max-width:46rem}
+.sec:first-child{border-top:none;padding-top:0;margin-top:0}
+.h{font-family:var(--mono);font-weight:800;font-size:1.15rem;letter-spacing:-.01em;color:var(--ink);display:flex;gap:.85rem;align-items:baseline}
+.h::before{content:counter(sec,decimal-leading-zero);font-size:.78rem;font-weight:700;letter-spacing:.1em;color:var(--faint);flex:none}
+.sec p{margin-top:1rem;font-size:1rem;line-height:1.72;color:var(--text)}
+.sec p+p{margin-top:.9rem}
+.sec a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--ink);padding-bottom:1px}
+.sec a:hover,.sec a:focus-visible{background:var(--ink);color:#fff}
+.sec code{font-family:var(--mono);font-size:.86em;background:#f3f3ef;padding:.08em .35em;border:1px solid var(--line)}
+.sec details{margin-top:1.4rem;border:1px solid var(--line)}
+.sec summary{cursor:pointer;list-style:none;font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);padding:.85rem 1rem;display:flex;align-items:center;gap:.6rem;min-height:24px}
+.sec summary::-webkit-details-marker{display:none}
+.sec summary::before{content:"+";font-weight:700;font-size:.95rem;line-height:1;color:var(--faint)}
+.sec details[open] summary{border-bottom:1px solid var(--line)}
+.sec details[open] summary::before{content:"\2212"}
+.sec summary:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.details-body{padding:1.1rem 1rem 1.3rem}
+.arch{position:relative;margin-top:.3rem;border:1px solid var(--line);padding:1.4rem 1.1rem 1.5rem;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:19px 19px;background-position:center top}
+.arch::before,.arch::after{content:"";position:absolute;width:9px;height:9px;border:1.5px solid var(--faint)}
+.arch::before{top:-1px;left:-1px;border-right:0;border-bottom:0}
+.arch::after{right:-1px;bottom:-1px;border-left:0;border-top:0}
+.arch-cap{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;line-height:1.55;color:var(--faint);margin-bottom:1.4rem}
+.arch-flow{list-style:none;max-width:30rem;margin-inline:auto}
+.arch-node{position:relative;background:var(--bg);border:1px solid var(--line);padding:.7rem .9rem}
+.arch-node+.arch-node{margin-top:1.75rem}
+.arch-node+.arch-node::before{content:"\2193";position:absolute;left:50%;top:-1.5rem;transform:translateX(-50%);font-family:var(--mono);font-size:.95rem;line-height:1;color:var(--faint)}
+.arch-k{display:block;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink)}
+.arch-d{display:block;margin-top:.32rem;font-size:.9rem;line-height:1.55;color:var(--text)}
+.arch-d code,.arch-branch code{font-size:.85em}
+.arch-note{color:var(--muted)}
+.arch-host{border-color:var(--ink)}
+.arch-branch{list-style:none;margin-top:.75rem;display:grid;gap:.5rem}
+.arch-branch li{position:relative;padding-left:1.5rem;font-size:.86rem;line-height:1.5;color:var(--text)}
+.arch-branch li::before{content:"\21B3";position:absolute;left:.25rem;top:0;font-family:var(--mono);color:var(--faint)}
+.arch-badge{display:inline-block;font-family:var(--mono);font-size:.6rem;letter-spacing:.06em;font-weight:700;color:var(--ink);border:1px solid var(--ink);padding:.05rem .32rem;margin-right:.15rem;white-space:nowrap}
+.arch-badge-alt{font-weight:400;color:var(--muted);border-style:dashed;border-color:var(--faint)}
+.arch-end{border-color:var(--ink)}
+.sec details[open] .arch-node{animation:rise .45s cubic-bezier(.22,.61,.36,1) both}
+.sec details[open] .arch-node:nth-child(2){animation-delay:.06s}
+.sec details[open] .arch-node:nth-child(3){animation-delay:.12s}
+.sec details[open] .arch-node:nth-child(4){animation-delay:.18s}
+.sec details[open] .arch-node:nth-child(5){animation-delay:.24s}
+.codes{list-style:none;margin-top:1.4rem;max-width:42rem}
+.codes li{margin-top:.7rem;font-size:.92rem;line-height:1.6;color:var(--text)}
+.sec .flow-foot{font-size:.9rem;color:var(--muted)}
+
+.foot{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);padding:2rem clamp(1.25rem,5vw,3.5rem) 2.5rem;text-align:center}
+.foot a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--ink);padding-bottom:1px}
+.foot a:hover,.foot a:focus-visible{background:var(--ink);color:#fff}
+
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.skip{position:absolute;left:.75rem;top:-4rem;z-index:20;background:var(--ink);color:#fff;font-family:var(--mono);font-size:.78rem;letter-spacing:.06em;padding:.65rem 1rem;text-decoration:none;border:1px solid #fff;transition:top .15s ease}
+.skip:focus{top:.75rem}
+a:focus-visible{outline:2px solid var(--ink);outline-offset:2px;border-radius:1px}
+.bar a:focus-visible,.skip:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.bar a{min-height:24px;display:inline-flex;align-items:center}
+.sec a:focus-visible,.foot a:focus-visible{outline-offset:1px}
+main:focus{outline:none}
+@keyframes rise{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+.mast>*{animation:rise .55s cubic-bezier(.22,.61,.36,1) both}
+.mast .t{animation-delay:.05s}.mast .s{animation-delay:.1s}.mast .updated{animation-delay:.14s}.mast .facts{animation-delay:.18s}.mast .cta{animation-delay:.24s}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to main content</a>
+<header class="bar"><div class="bar-inner">
+<a class="brand" href="/">LIES ABOVE</a>
+<a class="bar-link" href="https://liesabove.com" target="_blank" rel="noopener" aria-label="liesabove.com (opens in a new tab)">liesabove.com <span aria-hidden="true">&#8599;</span></a>
+</div></header>
+<nav class="crumbs" aria-label="Breadcrumb"><ol>
+<li><a href="/">Home</a></li>
+<li><span aria-current="page">Privacy</span></li>
+</ol></nav>
+<main class="wrap" id="main" tabindex="-1">
+<div class="mast">
+<p class="eyebrow">Privacy &amp; Source</p>
+<h1 class="t">Privacy</h1>
+<div class="rule" aria-hidden="true"></div>
+<p class="s">How this redirector handles your data, the short version, because there isn&rsquo;t much.</p>
+<p class="updated">Last updated &middot; June 2026</p>
+<ul class="facts">
+<li><strong>Static pages only.</strong> Every page is a plain file. There is no application server and no database.</li>
+<li><strong>No logs.</strong> Nothing on my side records who you are, what you scan, or where you go.</li>
+<li><strong>No cookies, no analytics, no trackers.</strong> Nothing is stored on your device.</li>
+<li><strong>No third-party resources.</strong> No external fonts, scripts, or assets load. Your browser talks only to this host, then to whatever source you choose to open.</li>
+</ul>
+<div class="cta">
+<a class="btn" href="https://github.com/Lies-Above/lies-above.github.io" target="_blank" rel="noopener" aria-label="View the app source code on GitHub (opens in a new tab)"><span class="glyph" aria-hidden="true">&lt;/&gt;</span> View the app source code <span aria-hidden="true">&#8599;</span></a>
+<a class="btn btn-ghost" href="/references/">Browse all references</a>
+</div>
+</div>
+
+<div class="doc">
+<section class="sec" aria-labelledby="h-how">
+<h2 class="h" id="h-how">How the app works</h2>
+<p>Each QR code in the book points to a short address on this site, like <code>liesabove.app/v1/fn5/1/</code>. That address is a small HTML file, prepared ahead of time from the book&rsquo;s list of citations, that shows you where you&rsquo;re going and then forwards you to the source it cites. Nothing runs on a server when you visit: the routing is baked into the file, so the whole site is just a folder of static pages that GitHub serves as-is.</p>
+<details>
+<summary>The technical version</summary>
+<div class="details-body">
+<figure class="arch" aria-labelledby="arch-cap">
+<figcaption id="arch-cap" class="arch-cap">How one scan travels from the page to the source. The request flows down, and the host answers with an HTTP status.</figcaption>
+<ol class="arch-flow">
+<li class="arch-node"><span class="arch-k">Book / QR</span><span class="arch-d">A printed QR code holds one address, like <code>liesabove.app/v1/fn5/1/</code>.</span></li>
+<li class="arch-node"><span class="arch-k">Your browser</span><span class="arch-d">Opens that address over <code>HTTPS</code>, an encrypted connection.</span></li>
+<li class="arch-node arch-host"><span class="arch-k">GitHub Pages</span><span class="arch-d">The static host looks for a file at that exact path. No program runs, there are only files.</span>
+<ul class="arch-branch">
+<li><span class="arch-badge">200 OK</span> the file exists, so its page is sent back.</li>
+<li><span class="arch-badge arch-badge-alt">404</span> no file matches, so the branded Not Found page is sent instead.</li>
+</ul></li>
+<li class="arch-node"><span class="arch-k">Redirect page</span><span class="arch-d">A plain HTML file. It shows you where you are going, then your browser forwards itself there. <span class="arch-note">No <code>301</code> or <code>302</code> server redirect, so nothing logs a hop in between.</span></span></li>
+<li class="arch-node arch-end"><span class="arch-k">Cited source</span><span class="arch-d">You arrive at the third-party page the book cites, which has its own rules.</span></li>
+</ol>
+</figure>
+<ul class="codes">
+<li><code>HTTPS</code>: the padlock in your address bar. The whole site loads over an encrypted connection, so the page cannot be read or changed on its way to you.</li>
+<li><code>200 OK</code>: the reference exists and its page reached you. The ordinary &ldquo;it worked&rdquo; response.</li>
+<li><code>404 Not Found</code>: the address matches no reference, so the branded Not Found page appears (usually a wrong or mistyped code).</li>
+<li><code>No 301 / 302</code>: there is deliberately no server redirect (the usual way one address bounces you to another). The page arrives as an ordinary file and forwards you from inside your browser, so you see where you&rsquo;re going first and nothing logs a hop in between.</li>
+</ul>
+<p class="flow-foot">In short: a folder of plain pages, served over an encrypted connection, each one showing its destination before it hands you off.</p>
+</div>
+</details>
+</section>
+
+<section class="sec" aria-labelledby="h-logs">
+<h2 class="h" id="h-logs">Why there are no logs</h2>
+<p>Because the site is static, I never run any program when you load a page, so there is no place for me to log anything. I receive no analytics, no IP addresses, no visit counts, and no record of which links get scanned or followed. There is nothing on my side to collect, because nothing on my side runs.</p>
+<p>That said, I want to be completely straight about one thing: <strong>the host does receive your data, and I can&rsquo;t prevent it.</strong> To open this site, your browser has to connect to the server that serves it, <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/about-github-pages#data-collection" target="_blank" rel="noopener">GitHub Pages</a>. By the basic nature of how the web works, GitHub receives that request and can see data such as your IP address and which page you asked for, in order to deliver the file and guard against abuse, under GitHub&rsquo;s own privacy statement. This is true of any web host I could use; it is not something this site adds or could turn off. I don&rsquo;t have access to that data and receive no reports from it.</p>
+<p>I chose GitHub Pages deliberately, with that trade-off in mind. Because the code is public and served straight from the repository, anyone can see exactly what is running at any moment. There is no hidden backend you have to take on faith. I decided that being able to show you the code was worth more than routing your traffic through a host that would be harder to verify.</p>
+</section>
+
+<section class="sec" aria-labelledby="h-dest">
+<h2 class="h" id="h-dest">Where your scans go</h2>
+<p>Following a QR code sends you to a third-party source chosen for the book&rsquo;s citations, such as a website, document, video, or archive. Those destinations have their own privacy practices, which this site does not control. This site does not track which links you open.</p>
+</section>
+
+<section class="sec" aria-labelledby="h-source">
+<h2 class="h" id="h-source">See it for yourself</h2>
+<p>You don&rsquo;t have to take my word for any of this. The entire site (every page and the short script that generates the redirects) is open source. You can read exactly what gets served, confirm there are no trackers, and see how a citation becomes a redirect.</p>
+<p><a href="https://github.com/Lies-Above/lies-above.github.io" target="_blank" rel="noopener">View the app source code on GitHub</a>, then check the generator (<code>gen.sh</code>) and the citation list (<code>redirects.json</code>).</p>
+</section>
+
+<section class="sec" aria-labelledby="h-sec">
+<h2 class="h" id="h-sec">Security</h2>
+<p>This app is built to be hard to get wrong. It is only static files: no server-side code, no database, no accounts, and no third-party scripts, which leaves very little to attack or break. The small amount of JavaScript here is plain (no frameworks, no libraries) and is used only where it is genuinely needed, such as forwarding you to a source or remembering your preference. All of it runs in your browser.</p>
+<p>It is also auditable by design. Every change to the site is a public commit on GitHub, so what is being served can always be checked against the source, and the history shows exactly what changed and when.</p>
+<p>If you ever find a page here serving malware, or anything that looks tampered with or otherwise wrong, please tell me. <span id="sec-mail"></span><noscript>Email security <span aria-hidden="true">[at]</span> liesabove <span aria-hidden="true">[dot]</span> com.</noscript></p>
+</section>
+
+<section class="sec" aria-labelledby="h-com">
+<h2 class="h" id="h-com">The book&rsquo;s site, liesabove.com</h2>
+<p>This page covers the redirector you&rsquo;re on now (<code>liesabove.app</code>). The book&rsquo;s main website is a separate site, <a href="https://liesabove.com" target="_blank" rel="noopener">liesabove.com</a>, with the landing page, the trailer, and the articles. If you typed the <code>.com</code> address, or came for the trailer, here&rsquo;s how that site treats your data.</p>
+<p>That site isn&rsquo;t static like this one. It runs on <a href="https://ghost.org" target="_blank" rel="noopener">Ghost</a>, a hosted publishing platform, on Ghost&rsquo;s own infrastructure, with its data kept in the EU. As with any real host, Ghost receives the usual request data (such as your IP address) in order to serve pages and guard against abuse; that part is governed by <a href="https://ghost.org/privacy/" target="_blank" rel="noopener">Ghost&rsquo;s privacy policy</a>, not this one.</p>
+<p><code>liesabove.com</code> keeps simple visitor analytics, held to the bare minimum Ghost provides. They&rsquo;re privacy-friendly by design: first-party (served from the site itself, not a third party), cookie-free (nothing is stored on your device, so there is no cookie banner), and a repeat visit within a 24-hour window isn&rsquo;t counted as a new person. What I can see is only aggregate: how many people visited, which country they were in, and which link or site sent them. I don&rsquo;t see who you are, and I&rsquo;ve added no Google Analytics, advertising pixels, or third-party trackers.</p>
+<p>One thing does reach me personally, and only if you choose it: subscribing to the newsletter hands Ghost your email address so the book updates can be sent, and that address is visible to me in Ghost. It&rsquo;s opt-in, it happens only when you submit the form, every email carries an unsubscribe link, and I don&rsquo;t sell or share it.</p>
+</section>
+
+<section class="sec" aria-labelledby="h-ai">
+<h2 class="h" id="h-ai">A note on AI</h2>
+<p>Artificial intelligence was a tool in making this book and this site, never a replacement for the people doing the work. A human verified every fact, and every original idea is the author&rsquo;s own. No AI-generated audio, interviews, or video appears anywhere, and the cover art and trailer were made by a human designer. For the longer account of what AI helped with and where it fell short, read the <a href="/ai/">AI use</a> page.</p>
+</section>
+
+<section class="sec" aria-labelledby="h-changes">
+<h2 class="h" id="h-changes">Changes &amp; contact</h2>
+<p>If this policy changes, the &ldquo;last updated&rdquo; date above changes with it. Questions about privacy or the book? Visit <a href="https://liesabove.com" target="_blank" rel="noopener">liesabove.com</a>.</p>
+</section>
+</div>
+</main>
+<footer class="foot">Back to <a href="/">the redirect home</a> &nbsp;&middot;&nbsp; <a href="/references/">references</a></footer>
+<script>(function(){var el=document.getElementById("sec-mail");if(!el)return;var u="security",d=["liesabove","com"].join(".");var a=document.createElement("a");a.href="mailto:"+u+"@"+d+"?subject="+encodeURIComponent("Lies Above security report");a.textContent=u+"@"+d;el.appendChild(document.createTextNode("Email "));el.appendChild(a);el.appendChild(document.createTextNode(" with the details."))})();</script>
+</body>
+</html>

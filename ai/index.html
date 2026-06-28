@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Use · Lies Above</title>
+<meta name="theme-color" content="#0b0b0c">
+<meta name="robots" content="noindex">
+<style>
+:root{
+  --ink:#0b0b0c;--bg:#fff;--line:#e4e4e0;--grid:#efefea;--muted:#666;--faint:#70706c;
+  --mono:ui-monospace,'SF Mono',SFMono-Regular,'Cascadia Mono','Segoe UI Mono','Roboto Mono',Menlo,Consolas,monospace;
+  --sans:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:var(--sans);color:var(--ink);line-height:1.5;background-color:var(--bg);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:46px 46px;background-position:center top;
+  display:flex;flex-direction:column;min-height:100vh;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale
+}
+.bar{background:var(--ink);color:#fff;border-bottom:1px solid #000}
+.bar-inner{max-width:64rem;margin:0 auto;padding:.95rem clamp(1.25rem,5vw,3.5rem);display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.brand{font-family:var(--mono);font-weight:800;letter-spacing:.2em;font-size:.95rem;color:#fff;text-decoration:none}
+.bar-link{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:#b9b9b9;text-decoration:none;white-space:nowrap}
+.bar-link:hover{color:#fff}
+.crumbs{max-width:64rem;margin:0 auto;width:100%;background:var(--bg);border-inline:1px solid var(--line);border-bottom:1px solid var(--line);padding:.7rem clamp(1.25rem,5vw,3.5rem)}
+.crumbs ol{list-style:none;display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase}
+.crumbs li{display:flex;align-items:center;gap:.5rem}
+.crumbs li+li::before{content:"\203A";color:var(--faint)}
+.crumbs a{color:var(--muted);text-decoration:none;border-bottom:1px solid transparent;min-height:24px;display:inline-flex;align-items:center}
+.crumbs a:hover,.crumbs a:focus-visible{color:var(--ink);border-bottom-color:var(--ink)}
+.crumbs [aria-current="page"]{color:var(--ink)}
+.wrap{flex:1;width:100%;max-width:64rem;margin:0 auto;background:var(--bg);border-inline:1px solid var(--line);padding:clamp(2.75rem,8vw,5rem) clamp(1.25rem,5vw,3.5rem);display:flex;flex-direction:column;justify-content:flex-start}
+.eyebrow{font-family:var(--mono);font-size:.7rem;letter-spacing:.24em;text-transform:uppercase;color:var(--faint);margin-bottom:1.1rem}
+.t{font-family:var(--mono);font-weight:800;font-size:clamp(2.2rem,7vw,3.75rem);letter-spacing:-.02em;line-height:1.02;color:var(--ink)}
+.rule{width:48px;height:3px;background:var(--ink);margin:1.6rem 0}
+.s{font-size:1.1rem;color:var(--muted)}
+.s em{font-style:italic}
+.n{margin-top:1.4rem;font-size:.95rem;line-height:1.65;color:var(--muted);max-width:44rem}
+.n a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--ink);padding-bottom:1px}
+.n a:hover,.n a:focus-visible{background:var(--ink);color:#fff}
+.foot{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);padding:2rem clamp(1.25rem,5vw,3.5rem) 2.5rem;text-align:center}
+.foot a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--ink);padding-bottom:1px}
+.foot a:hover,.foot a:focus-visible{background:var(--ink);color:#fff}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.skip{position:absolute;left:.75rem;top:-4rem;z-index:20;background:var(--ink);color:#fff;font-family:var(--mono);font-size:.78rem;letter-spacing:.06em;padding:.65rem 1rem;text-decoration:none;border:1px solid #fff;transition:top .15s ease}
+.skip:focus{top:.75rem}
+a:focus-visible{outline:2px solid var(--ink);outline-offset:2px;border-radius:1px}
+.bar a:focus-visible,.skip:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.bar a{min-height:24px;display:inline-flex;align-items:center}
+main:focus{outline:none}
+@keyframes rise{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+.mast>*{animation:rise .55s cubic-bezier(.22,.61,.36,1) both}
+.mast .t{animation-delay:.05s}.mast .s{animation-delay:.1s}.mast .n{animation-delay:.16s}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to main content</a>
+<header class="bar"><div class="bar-inner">
+<a class="brand" href="/">LIES ABOVE</a>
+<a class="bar-link" href="https://liesabove.com" target="_blank" rel="noopener" aria-label="liesabove.com (opens in a new tab)">liesabove.com <span aria-hidden="true">&#8599;</span></a>
+</div></header>
+<nav class="crumbs" aria-label="Breadcrumb"><ol>
+<li><a href="/">Home</a></li>
+<li><span aria-current="page">AI Use</span></li>
+</ol></nav>
+<main class="wrap" id="main" tabindex="-1"><div class="mast">
+<p class="eyebrow">Transparency</p>
+<h1 class="t">AI Use</h1>
+<div class="rule" aria-hidden="true"></div>
+<p class="s">What AI did here, and what it didn&rsquo;t</p>
+<p class="n">AI was a tool in making this book and this site, the same way a word processor or a search engine is. A human did the thinking and a human checked every fact. It was primarily used to assist with my spelling and grammar.</p>
+<p class="n">The rest of the work stayed in human hands. Human editors revised the text with AI assistance, and a human designer made the cover art and the trailer, with AI used only on the transitions. No AI-generated audio, interviews, or video appears anywhere.</p>
+<p class="n">It also wrote the companion site you are reading now, the small redirect service that turns the QR codes in the book into working links, and I reviewed every line before it shipped.</p>
+<p class="n">Ultimately I found AI often more trouble than it was worth outside of grammar and spell checking. These tools fail in silent ways that can be difficult to spot, such as changing a minor date, or confusing one congressional hearing with another. AI-generated text also has a noticeable generic pattern that is often boring, unopinionated, and surface-level. As an editor, it is never finished, and will always propose one more change whether the sentence needs it or not. The real danger, for a book built on the record, is that it states wrong things with complete confidence. It will hand you a clean, well-formed sentence with a fabricated figure inside it, a small false detail that reads fine, parses fine, and is simply not true.</p>
+<p class="n">None of this made the work faster. Writing with AI took longer than writing without it. For how this site handles your data, see the <a href="/privacy/">privacy &amp; source page</a>, or visit <a href="https://liesabove.com">liesabove.com</a>.</p>
+</div></main>
+<footer class="foot">Back to <a href="/">the redirect home</a> &nbsp;&middot;&nbsp; <a href="/references/">references</a></footer>
+</body>
+</html>

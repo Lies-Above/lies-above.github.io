@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Index · Lies Above</title>
+<meta name="theme-color" content="#0b0b0c">
+<meta name="robots" content="noindex">
+<style>
+:root{
+  --ink:#0b0b0c;--bg:#fff;--line:#e4e4e0;--grid:#efefea;--muted:#666;--faint:#70706c;
+  --mono:ui-monospace,'SF Mono',SFMono-Regular,'Cascadia Mono','Segoe UI Mono','Roboto Mono',Menlo,Consolas,monospace;
+  --sans:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:var(--sans);color:var(--ink);line-height:1.5;background-color:var(--bg);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:46px 46px;background-position:center top;
+  display:flex;flex-direction:column;min-height:100vh;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale
+}
+.bar{background:var(--ink);color:#fff;border-bottom:1px solid #000}
+.bar-inner{max-width:64rem;margin:0 auto;padding:.95rem clamp(1.25rem,5vw,3.5rem);display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.brand{font-family:var(--mono);font-weight:800;letter-spacing:.2em;font-size:.95rem;color:#fff;text-decoration:none}
+.bar-link{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:#b9b9b9;text-decoration:none;white-space:nowrap}
+.bar-link:hover{color:#fff}
+.crumbs{max-width:64rem;margin:0 auto;width:100%;background:var(--bg);border-inline:1px solid var(--line);border-bottom:1px solid var(--line);padding:.7rem clamp(1.25rem,5vw,3.5rem)}
+.crumbs ol{list-style:none;display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase}
+.crumbs li{display:flex;align-items:center;gap:.5rem}
+.crumbs li+li::before{content:"\203A";color:var(--faint)}
+.crumbs a{color:var(--muted);text-decoration:none;border-bottom:1px solid transparent;min-height:24px;display:inline-flex;align-items:center}
+.crumbs a:hover,.crumbs a:focus-visible{color:var(--ink);border-bottom-color:var(--ink)}
+.crumbs [aria-current="page"]{color:var(--ink)}
+.wrap{flex:1;width:100%;max-width:64rem;margin:0 auto;background:var(--bg);border-inline:1px solid var(--line);padding:clamp(2.75rem,8vw,5rem) clamp(1.25rem,5vw,3.5rem);display:flex;flex-direction:column;justify-content:flex-start}
+.eyebrow{font-family:var(--mono);font-size:.7rem;letter-spacing:.24em;text-transform:uppercase;color:var(--faint);margin-bottom:1.1rem}
+.t{font-family:var(--mono);font-weight:800;font-size:clamp(2.2rem,7vw,3.75rem);letter-spacing:-.02em;line-height:1.02;color:var(--ink)}
+.rule{width:48px;height:3px;background:var(--ink);margin:1.6rem 0}
+.s{font-size:1.1rem;color:var(--muted)}
+.s em{font-style:italic}
+.lead{margin-top:1.3rem;font-size:.95rem;line-height:1.65;color:var(--muted);max-width:44rem}
+.lead a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--ink);padding-bottom:1px}
+.lead a:hover,.lead a:focus-visible{background:var(--ink);color:#fff}
+.tools{margin:2.1rem 0 .4rem;display:flex;flex-direction:column;gap:1rem}
+.filter{font-family:var(--mono);font-size:.85rem;color:var(--ink);background:var(--bg);border:1px solid var(--line);padding:.65rem .85rem;width:100%;max-width:24rem}
+.filter:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.azjump{display:flex;flex-wrap:wrap;gap:.2rem}
+.azjump a{font-family:var(--mono);font-size:.72rem;color:var(--muted);text-decoration:none;border:1px solid var(--line);min-width:1.55rem;height:1.55rem;display:inline-flex;align-items:center;justify-content:center}
+.azjump a:hover,.azjump a:focus-visible{background:var(--ink);color:#fff;border-color:var(--ink);outline:none}
+.count{font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin:.2rem 0 1.4rem}
+.idx{column-width:21rem;column-gap:3rem;orphans:2;widows:2}
+.idx-letter{font-family:var(--mono);font-weight:800;font-size:.95rem;color:var(--ink);border-bottom:1px solid var(--line);padding-bottom:.3rem;margin:1.7rem 0 .75rem;break-after:avoid}
+.idx-letter:first-child{margin-top:0}
+.idx-entry{break-inside:avoid;margin:0 0 .5rem}
+.idx-h,.idx-sub,.idx-seealso{font-size:.9rem;line-height:1.5;color:var(--ink)}
+.idx-h{padding-left:1.15em;text-indent:-1.15em}
+.idx-sub{padding-left:2.35em;text-indent:-1.15em;color:var(--text,#1c1c1d)}
+.idx-seealso{padding-left:2.35em;text-indent:-1.15em;color:var(--muted)}
+.idx-h em,.idx-sub em,.idx-seealso em{font-style:italic}
+.idx-empty{display:none;font-size:.9rem;color:var(--muted)}
+.foot{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);padding:2rem clamp(1.25rem,5vw,3.5rem) 2.5rem;text-align:center}
+.foot a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--ink);padding-bottom:1px}
+.foot a:hover,.foot a:focus-visible{background:var(--ink);color:#fff}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.skip{position:absolute;left:.75rem;top:-4rem;z-index:20;background:var(--ink);color:#fff;font-family:var(--mono);font-size:.78rem;letter-spacing:.06em;padding:.65rem 1rem;text-decoration:none;border:1px solid #fff;transition:top .15s ease}
+.skip:focus{top:.75rem}
+a:focus-visible{outline:2px solid var(--ink);outline-offset:2px;border-radius:1px}
+.bar a:focus-visible,.skip:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.bar a{min-height:24px;display:inline-flex;align-items:center}
+main:focus{outline:none}
+@keyframes rise{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+.mast>*{animation:rise .55s cubic-bezier(.22,.61,.36,1) both}
+.mast .t{animation-delay:.05s}.mast .s{animation-delay:.1s}.mast .lead{animation-delay:.16s}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to main content</a>
+<header class="bar"><div class="bar-inner">
+<a class="brand" href="/">LIES ABOVE</a>
+<a class="bar-link" href="https://liesabove.com" target="_blank" rel="noopener" aria-label="liesabove.com (opens in a new tab)">liesabove.com <span aria-hidden="true">&#8599;</span></a>
+</div></header>
+<nav class="crumbs" aria-label="Breadcrumb"><ol>
+<li><a href="/">Home</a></li>
+<li><span aria-current="page">Index</span></li>
+</ol></nav>
+<main class="wrap" id="main" tabindex="-1">
+<div class="mast">
+<p class="eyebrow">Back-of-Book</p>
+<h1 class="t">Index</h1>
+<div class="rule" aria-hidden="true"></div>
+<p class="s">The book&rsquo;s index of names, terms, and cases</p>
+<p class="lead">Every name, term, and case from the printed book, with its page references. The numbers follow the print edition. Filter the list below, or jump to a letter. To browse every cited source instead, see <a href="/references/">all references</a>.</p>
+</div>
+<div class="tools">
+<label class="sr-only" for="idx-filter">Filter the index</label>
+<input class="filter" id="idx-filter" type="search" autocomplete="off" spellcheck="false" placeholder="Filter the index (e.g. Grusch, AARO, Nimitz)">
+<nav class="azjump" aria-label="Jump to letter"><a href="#L-A">A</a><a href="#L-B">B</a><a href="#L-C">C</a><a href="#L-D">D</a><a href="#L-E">E</a><a href="#L-F">F</a><a href="#L-G">G</a><a href="#L-H">H</a><a href="#L-I">I</a><a href="#L-J">J</a><a href="#L-K">K</a><a href="#L-L">L</a><a href="#L-M">M</a><a href="#L-N">N</a><a href="#L-O">O</a><a href="#L-P">P</a><a href="#L-Q">Q</a><a href="#L-R">R</a><a href="#L-S">S</a><a href="#L-T">T</a><a href="#L-U">U</a><a href="#L-V">V</a><a href="#L-W">W</a><a href="#L-Y">Y</a><a href="#L-Z">Z</a></nav>
+</div>
+<p class="count" id="idx-count">456 entries</p>
+<div class="idx" id="idx">
+<h2 class="idx-letter" id="L-A">A</h2>
+<div class="idx-entry"><p class="idx-h">AARO</p><p class="idx-sub">case resolution methodology, 30, 70, 181, 190, 197, 199, 228, 229, 314, 330, 331, 353</p><p class="idx-sub">congressional oversight, 188, 231, 322, 325</p><p class="idx-sub">coordinating role and authority limits, 189, 196, 199, 201, 272, 288, 353, 363</p><p class="idx-sub">counterintelligence posture and honeypot concerns, 182, 210, 211, 212</p><p class="idx-sub">criticism and release of the report, 214, 215, 221</p><p class="idx-sub">establishment and mandate, 169, 185, 189, 226, 363</p><p class="idx-sub">Kirkpatrick disinformation claims, 203, 204, 222, 223, 224, 225</p><p class="idx-sub">KONA BLUE disclosures, 150, 151, 157</p><p class="idx-sub">leadership, 193, 194, 195, 197, 198, 201</p><p class="idx-sub">public attacks on witnesses, 202, 204, 205, 206, 207</p><p class="idx-sub">relationship to FBI UAP Working Group, 192, 193, 207</p><p class="idx-sub">relationship to NASA study, 207, 208, 209</p><p class="idx-sub">report findings and conclusions, 33, 216, 217, 220</p><p class="idx-sub">report methodology, scope, and omissions, 216, 217, 218, 219, 311</p><p class="idx-sub">technical advisers and independence, 229, 230, 231</p><p class="idx-sub">witness interviews and record-keeping, 191, 200, 212, 213, 228</p><p class="idx-seealso"><em>See also</em> UAP Task Force; AATIP; AAWSAP; AOIMSG; Kona Blue</p></div>
+<div class="idx-entry"><p class="idx-h">AATIP, 4, 145, 153, 156, 157, 163, 165</p><p class="idx-seealso"><em>See also</em> AAWSAP; UAP Task Force; AARO</p></div>
+<div class="idx-entry"><p class="idx-h">AAWSAP, 145, 146, 147, 148, 149, 153, 157, 217</p><p class="idx-seealso"><em>See also</em> AATIP; Bigelow Aerospace Advanced Space Studies; National Institute for Discovery Science</p></div>
+<div class="idx-entry"><p class="idx-h">ABC News, 202, 221</p></div>
+<div class="idx-entry"><p class="idx-h">Advanced Aerospace Threat Identification Program. <em>See</em> AATIP</p></div>
+<div class="idx-entry"><p class="idx-h">Advanced Aerospace Weapon System Applications Program. <em>See</em> AAWSAP</p></div>
+<div class="idx-entry"><p class="idx-h">AFOSI. <em>See</em> Air Force Office of Special Investigations</p></div>
+<div class="idx-entry"><p class="idx-h">Age of Disclosure. <em>See</em> The Age of Disclosure</p></div>
+<div class="idx-entry"><p class="idx-h">Air Force Office of Special Investigations, 63, 64, 65, 66, 67, 153, 212, 277, 344</p></div>
+<div class="idx-entry"><p class="idx-h">Air Materiel Command, 33</p></div>
+<div class="idx-entry"><p class="idx-h">Air Technical Intelligence Center, 33, 34, 46</p><p class="idx-seealso"><em>See also</em> Air Materiel Command; Project Blue Book; Wright-Patterson Air Force Base</p></div>
+<div class="idx-entry"><p class="idx-h">Airborne Object Identification and Management Synchronization Group. <em>See</em> AOIMSG</p></div>
+<div class="idx-entry"><p class="idx-h">Alexiev, Leonid, 488</p></div>
+<div class="idx-entry"><p class="idx-h">All-domain Anomaly Resolution Office. <em>See</em> AARO</p></div>
+<div class="idx-entry"><p class="idx-h">Americans for Safe Aerospace, 306</p></div>
+<div class="idx-entry"><p class="idx-h">AOIMSG, 183, 184, 185</p><p class="idx-seealso"><em>See also</em> AARO; UAP Task Force</p></div>
+<div class="idx-entry"><p class="idx-h">Area 51, 311</p></div>
+<div class="idx-entry"><p class="idx-h">Ariel. <em>See</em> Ariel, Zimbabwe, 1994</p></div>
+<div class="idx-entry"><p class="idx-h">Ariel, Zimbabwe, 1994, 336</p></div>
+<div class="idx-entry"><p class="idx-h">Arnold, Kenneth, 33, 114, 214</p></div>
+<div class="idx-entry"><p class="idx-h">ATIC. <em>See</em> Air Technical Intelligence Center</p></div>
+<div class="idx-entry"><p class="idx-h">Atomic Energy Act, 189, 275, 358, 359, 363</p></div>
+<div class="idx-entry"><p class="idx-h">Axelsson, Stefan, 9</p></div>
+<div class="idx-entry"><p class="idx-h">Azhazha, Vladimir, 115, 117, 118</p></div>
+<h2 class="idx-letter" id="L-B">B</h2>
+<div class="idx-entry"><p class="idx-h">BAASS. <em>See</em> Bigelow Aerospace Advanced Space Studies</p></div>
+<div class="idx-entry"><p class="idx-h">Balducci, Corrado, 486</p></div>
+<div class="idx-entry"><p class="idx-h">Battelle Memorial Institute, 55</p></div>
+<div class="idx-entry"><p class="idx-h">Bejtlich, Richard, 9</p></div>
+<div class="idx-entry"><p class="idx-h">Bennewitz, Paul, 63, 64, 65, 66, 67, 70, 277, 307</p></div>
+<div class="idx-entry"><p class="idx-h">Bertrandias, Victor E., 377</p></div>
+<div class="idx-entry"><p class="idx-h">Bigelow Aerospace, 146</p></div>
+<div class="idx-entry"><p class="idx-h">Bigelow Aerospace Advanced Space Studies, 119, 145, 166, 305</p><p class="idx-seealso"><em>See also</em> AAWSAP; Bigelow Aerospace; Bigelow, Robert</p></div>
+<div class="idx-entry"><p class="idx-h">Bigelow, Robert, 145, 153, 302</p></div>
+<div class="idx-entry"><p class="idx-h">Bishop, Greg, 63, 64, 65</p></div>
+<div class="idx-entry"><p class="idx-h">Blue Book. <em>See</em> Project Blue Book</p></div>
+<div class="idx-entry"><p class="idx-h">Blumenthal, Ralph, 165</p></div>
+<div class="idx-entry"><p class="idx-h">Bolender, Carroll, 58, 133</p></div>
+<div class="idx-entry"><p class="idx-h">Bolster, Calvin, 380</p></div>
+<div class="idx-entry"><p class="idx-h">Bonham, Craig, 17</p></div>
+<div class="idx-entry"><p class="idx-h">Booker, Cory, 18, 23</p></div>
+<div class="idx-entry"><p class="idx-h">Borland, Dylan, 204, 207, 228, 306, 325, 425</p></div>
+<div class="idx-entry"><p class="idx-h">Bray, Scott, 402</p></div>
+<div class="idx-entry"><p class="idx-h">Brennan, John, 397</p></div>
+<div class="idx-entry"><p class="idx-h">Bruehl, Stephen, 100</p></div>
+<div class="idx-entry"><p class="idx-h">Budd, Ted, 15</p></div>
+<div class="idx-entry"><p class="idx-h">Burchett, Tim, 264, 448</p></div>
+<div class="idx-entry"><p class="idx-h">Burgess, Ronald L., Jr., 395</p></div>
+<div class="idx-entry"><p class="idx-h">Burlison, Eric, 192, 272, 273, 285, 320, 321, 324, 325</p></div>
+<h2 class="idx-letter" id="L-C">C</h2>
+<div class="idx-entry"><p class="idx-h">Cabell, Charles P., 44, 46, 47, 48, 49, 217, 375</p></div>
+<div class="idx-entry"><p class="idx-h">Cain, Will, 324</p></div>
+<div class="idx-entry"><p class="idx-h">Callahan, John, 432</p></div>
+<div class="idx-entry"><p class="idx-h">Capitol Hill, 6, 158, 287</p></div>
+<div class="idx-entry"><p class="idx-h">Carlborg, Herbert, 54</p></div>
+<div class="idx-entry"><p class="idx-h">Carlin, George, 84</p></div>
+<div class="idx-entry"><p class="idx-h">Carson, Andr&eacute;, 184, 437</p></div>
+<div class="idx-entry"><p class="idx-h">Carter, Jimmy, 368</p></div>
+<div class="idx-entry"><p class="idx-h">Central Intelligence Agency, xiv, 23, 49, 52, 53, 146, 149, 153, 189, 202, 203, 231, 363</p></div>
+<div class="idx-entry"><p class="idx-h">Cernan, Eugene A., 454</p></div>
+<div class="idx-entry"><p class="idx-h">Chadwell, H. Marshall, 379</p></div>
+<div class="idx-entry"><p class="idx-h">Chassin, L.M., 113, 478</p></div>
+<div class="idx-entry"><p class="idx-h">Chen Caifa, 127</p></div>
+<div class="idx-entry"><p class="idx-h">Chen Li, 496</p></div>
+<div class="idx-entry"><p class="idx-h">Chidlaw, Benjamin Wiley, 382</p></div>
+<div class="idx-entry"><p class="idx-h">Chiles, Clarence, 37</p></div>
+<div class="idx-entry"><p class="idx-h">Chop, Al, 49, 51, 413</p></div>
+<div class="idx-entry"><p class="idx-h">CIA. <em>See</em> Central Intelligence Agency</p></div>
+<div class="idx-entry"><p class="idx-h">Clapper, James R., 218, 219, 311, 394</p></div>
+<div class="idx-entry"><p class="idx-h">Clausen, Fred, 411</p></div>
+<div class="idx-entry"><p class="idx-h">Cline, Eric H., 281</p></div>
+<div class="idx-entry"><p class="idx-h">Clinton, Bill, 371</p></div>
+<div class="idx-entry"><p class="idx-h">Clinton, Hillary Rodham, 430</p></div>
+<div class="idx-entry"><p class="idx-h">Cohen, William S., 158</p></div>
+<div class="idx-entry"><p class="idx-h">Collins, Susan, 286</p></div>
+<div class="idx-entry"><p class="idx-h">COMETA, 131, 132</p></div>
+<div class="idx-entry"><p class="idx-h">Condon Committee, xiv, 23, 53, 55, 58, 60, 61, 63, 70, 117, 314</p><p class="idx-seealso"><em>See also</em> Condon, Edward; Project Blue Book</p></div>
+<div class="idx-entry"><p class="idx-h">Condon, Edward, 59</p></div>
+<div class="idx-entry"><p class="idx-h">Cook, Nick, 12</p></div>
+<div class="idx-entry"><p class="idx-h">Cooper, Gordon, 460</p></div>
+<div class="idx-entry"><p class="idx-h">Cooper, Helene, 165</p></div>
+<div class="idx-entry"><p class="idx-h">Corbell, Jeremy, 166, 167</p></div>
+<div class="idx-entry"><p class="idx-h">Corso, Philip J., 390</p></div>
+<div class="idx-entry"><p class="idx-h">Cotton, Tom, 19</p></div>
+<div class="idx-entry"><p class="idx-h">Coulthart, Ross, 93, 95, 97, 237, 317</p></div>
+<div class="idx-entry"><p class="idx-h">Crary, A.P., 68</p></div>
+<div class="idx-entry"><p class="idx-h">Crawford, Rick, 185</p></div>
+<div class="idx-entry"><p class="idx-h">Crockett, Jasmine, 226, 265</p></div>
+<div class="idx-entry"><p class="idx-h">Cummings, Jerry, 47</p></div>
+<div class="idx-entry"><p class="idx-h">Cuomo, Chris, 266</p></div>
+<h2 class="idx-letter" id="L-D">D</h2>
+<div class="idx-entry"><p class="idx-h">DARPA, ix, 92, 109, 219</p></div>
+<div class="idx-entry"><p class="idx-h">Daudpota, Mohammed Azim, 482</p></div>
+<div class="idx-entry"><p class="idx-h">Davis, Eric, 153, 161, 164, 168</p></div>
+<div class="idx-entry"><p class="idx-h">Day, Kevin, 73</p></div>
+<div class="idx-entry"><p class="idx-h">De Brouwer, Wilfried, 493</p></div>
+<div class="idx-entry"><p class="idx-h">Defense Advanced Research Projects Agency. <em>See</em> DARPA</p></div>
+<div class="idx-entry"><p class="idx-h">Defense Intelligence Agency, x, 119, 133, 145, 148, 157, 166, 168, 189, 363</p></div>
+<div class="idx-entry"><p class="idx-h">DefenseScoop, 221, 319</p></div>
+<div class="idx-entry"><p class="idx-h">DeLonge, Tom, 161, 163, 302, 323</p></div>
+<div class="idx-entry"><p class="idx-h">Department of Defense</p><p class="idx-sub">AARO&rsquo;s coordinating role within, 199, 200, 363</p><p class="idx-sub">limits of authority over legacy programs, 272, 320</p><p class="idx-sub">release and authentication of Navy videos, 4, 5, 78, 80, 146, 165</p><p class="idx-sub">secrecy and information-sharing barriers, 156, 159, 161, 202, 273</p><p class="idx-sub">Special Access Program oversight, 271, 353, 355, 356, 357, 358, 362</p><p class="idx-sub">UAP investigative offices established by, 169, 183, 184</p></div>
+<div class="idx-entry"><p class="idx-h">Department of Energy, 106, 189, 320, 325, 355, 358, 359, 363</p></div>
+<div class="idx-entry"><p class="idx-h">Department of Homeland Security, 17, 19, 150, 151, 152, 153, 189, 363</p></div>
+<div class="idx-entry"><p class="idx-h">Department of Justice, 228</p></div>
+<div class="idx-entry"><p class="idx-h">DHS. <em>See</em> Department of Homeland Security</p></div>
+<div class="idx-entry"><p class="idx-h">DIA. <em>See</em> Defense Intelligence Agency</p></div>
+<div class="idx-entry"><p class="idx-h">Dietrich, Alex, 5, xi, xii, 73</p></div>
+<div class="idx-entry"><p class="idx-h">Director of National Intelligence. <em>See</em> Office of the Director of National Intelligence</p></div>
+<div class="idx-entry"><p class="idx-h">DNI. <em>See</em> Office of the Director of National Intelligence</p></div>
+<div class="idx-entry"><p class="idx-h">Dobrynin, Anatoly, 479</p></div>
+<div class="idx-entry"><p class="idx-h">DoD. <em>See</em> Department of Defense</p></div>
+<div class="idx-entry"><p class="idx-h">DOE. <em>See</em> Department of Energy</p></div>
+<div class="idx-entry"><p class="idx-h">Doty, Richard, 63, 64, 66</p></div>
+<div class="idx-entry"><p class="idx-h">Dowding, Hugh, 477</p></div>
+<div class="idx-entry"><p class="idx-h">Drummond, Roscoe, 59</p></div>
+<div class="idx-entry"><p class="idx-h">Duryea, Bill, 160</p></div>
+<h2 class="idx-letter" id="L-E">E</h2>
+<div class="idx-entry"><p class="idx-h">Echo Flight, 57, 58</p></div>
+<div class="idx-entry"><p class="idx-h">Edwards, Douglas, 54</p></div>
+<div class="idx-entry"><p class="idx-h">Eglin Air Force Base, 75</p></div>
+<div class="idx-entry"><p class="idx-h">Elizondo, Luis (Lue), 418</p><p class="idx-sub">2017 New York Times disclosure, 161, 163, 164, 167</p><p class="idx-sub">assessments of government UAP efforts, 183, 184, 198, 213, 320</p><p class="idx-sub">constrained disclosure and nondisclosure obligations, 303</p><p class="idx-sub">disputes over his official role, 156, 157</p><p class="idx-sub">intelligence and counterintelligence career, 11, 142, 143, 144, 302</p><p class="idx-sub">media appearances and public advocacy, 4, 168</p><p class="idx-sub">misidentified photographs, 157, 305</p><p class="idx-sub">resignation from the Pentagon, 142, 155</p><p class="idx-sub">role in AATIP and AAWSAP, 145, 153, 154, 157</p></div>
+<div class="idx-entry"><p class="idx-h">ENSCO, 268</p></div>
+<div class="idx-entry"><p class="idx-h">Epstein Files Transparency Act, 227</p></div>
+<div class="idx-entry"><p class="idx-h">Esper, Mark, 236</p></div>
+<div class="idx-entry"><p class="idx-h">Espionage Act, 203</p></div>
+<div class="idx-entry"><p class="idx-h">Estimate of the Situation, 37, 39, 54, 216</p><p class="idx-seealso"><em>See also</em> Project Sign</p></div>
+<h2 class="idx-letter" id="L-F">F</h2>
+<div class="idx-entry"><p class="idx-h">FAA. <em>See</em> Federal Aviation Administration</p></div>
+<div class="idx-entry"><p class="idx-h">FACA. <em>See</em> Federal Advisory Committee Act</p></div>
+<div class="idx-entry"><p class="idx-h">Fahrney, Delmer, 383</p></div>
+<div class="idx-entry"><p class="idx-h">FBI. <em>See</em> Federal Bureau of Investigation</p></div>
+<div class="idx-entry"><p class="idx-h">Federal Advisory Committee Act, 231</p></div>
+<div class="idx-entry"><p class="idx-h">Federal Aviation Administration, 18, 20, 23, 93</p></div>
+<div class="idx-entry"><p class="idx-h">Federal Bureau of Investigation, 17, 188, 191, 192, 193, 197, 198, 315, 323</p></div>
+<div class="idx-entry"><p class="idx-h">Fetterman, John, 317</p></div>
+<div class="idx-entry"><p class="idx-h">Filer, George A., III, 391</p></div>
+<div class="idx-entry"><p class="idx-h">Fish, Bob, 467</p></div>
+<div class="idx-entry"><p class="idx-h">FOIA. <em>See</em> Freedom of Information Act</p></div>
+<div class="idx-entry"><p class="idx-h">Foley, Dave, 296</p></div>
+<div class="idx-entry"><p class="idx-h">Fomin, Yuri, 114</p></div>
+<div class="idx-entry"><p class="idx-h">Foo Fighters. <em>See</em> Foo Fighters, 1940s</p></div>
+<div class="idx-entry"><p class="idx-h">Foo Fighters, 1940s, 209</p></div>
+<div class="idx-entry"><p class="idx-h">Ford, Gerald R., 58, 367</p></div>
+<div class="idx-entry"><p class="idx-h">Ford, Matthew (Matt), 212, 229, 231</p></div>
+<div class="idx-entry"><p class="idx-h">Fox, James, 11, 197</p></div>
+<div class="idx-entry"><p class="idx-h">Fravor, David, ix, xi, xii, 78, 79, 81, 110, 145, 306, 307</p></div>
+<div class="idx-entry"><p class="idx-h">Freedom of Information Act, 109, 156, 196, 223, 224, 276, 344</p></div>
+<div class="idx-entry"><p class="idx-h">Friedman, Stanton, 463</p></div>
+<div class="idx-entry"><p class="idx-h">Friend, Robert, 214, 415</p></div>
+<h2 class="idx-letter" id="L-G">G</h2>
+<div class="idx-entry"><p class="idx-h">Gaffney, Glenn, 146, 153, 231</p></div>
+<div class="idx-entry"><p class="idx-h">Galileo Project, 103, 104</p></div>
+<div class="idx-entry"><p class="idx-h">Gallagher, Mike, 313, 439</p></div>
+<div class="idx-entry"><p class="idx-h">Gallaudet, Timothy, 107, 154, 155, 204, 205, 206, 296, 404</p></div>
+<div class="idx-entry"><p class="idx-h">Gallego, Ruben, 183</p></div>
+<div class="idx-entry"><p class="idx-h">Gang of Eight, 270, 271, 287, 356, 357, 361</p></div>
+<div class="idx-entry"><p class="idx-h">Garcia, Robert, 442</p></div>
+<div class="idx-entry"><p class="idx-h">Gillibrand, Kirsten, 20, 23, 183, 184, 200, 226, 267, 270, 272, 285, 440</p></div>
+<div class="idx-entry"><p class="idx-h">Gillis, Bryan, xiii</p></div>
+<div class="idx-entry"><p class="idx-h">Godman Army Airfield, 34</p></div>
+<div class="idx-entry"><p class="idx-h">Goodall, James, 459</p></div>
+<div class="idx-entry"><p class="idx-h">Gorbachev, Mikhail, 121, 484</p></div>
+<div class="idx-entry"><p class="idx-h">Gorman, George, 37</p></div>
+<div class="idx-entry"><p class="idx-h">Gough, Susan, 156, 157, 166, 221, 224</p></div>
+<div class="idx-entry"><p class="idx-h">Graves, Ryan, 263, 306, 307</p></div>
+<div class="idx-entry"><p class="idx-h">Greene, Marjorie Taylor, 228</p></div>
+<div class="idx-entry"><p class="idx-h">Greenewald, John, Jr., 224</p></div>
+<div class="idx-entry"><p class="idx-h">Greenstreet, Steven, 194</p></div>
+<div class="idx-entry"><p class="idx-h">Grudge Report. <em>See</em> Project Grudge</p></div>
+<div class="idx-entry"><p class="idx-h">Grusch, David, 307, 421</p><p class="idx-sub">allegations against obstructing legislators, 282, 283</p><p class="idx-sub">congressional testimony, 206, 235, 288</p><p class="idx-sub">IC Inspector General validation, 273, 274, 306, 315</p><p class="idx-sub">interdimensional hypothesis, 350</p><p class="idx-sub">post-government advisory role, 321</p><p class="idx-sub">task force assignment and investigation, 234, 235, 236, 237</p><p class="idx-seealso"><em>See also</em> Intelligence Community Inspector General; UAP Task Force</p></div>
+<div class="idx-entry"><p class="idx-h">Guillot, Gregory M., 15, 19, 23</p></div>
+<h2 class="idx-letter" id="L-H">H</h2>
+<div class="idx-entry"><p class="idx-h">Haines, Avril, 98, 99, 401</p></div>
+<div class="idx-entry"><p class="idx-h">Haisch, Bernard, 461</p></div>
+<div class="idx-entry"><p class="idx-h">Hanks, Micah, 221</p></div>
+<div class="idx-entry"><p class="idx-h">Harrison, Mark, 291</p></div>
+<div class="idx-entry"><p class="idx-h">Hartmann, William K., 453</p></div>
+<div class="idx-entry"><p class="idx-h">HASC. <em>See</em> House Armed Services Committee</p></div>
+<div class="idx-entry"><p class="idx-h">Hegseth, Pete, 320, 322, 323</p></div>
+<div class="idx-entry"><p class="idx-h">Heinrich, Martin, 435</p></div>
+<div class="idx-entry"><p class="idx-h">Hellyer, Paul, 489</p></div>
+<div class="idx-entry"><p class="idx-h">Hennessey, Barry, 153, 419</p></div>
+<div class="idx-entry"><p class="idx-h">Highland, Illinois. <em>See</em> Highland, Illinois, 2000</p></div>
+<div class="idx-entry"><p class="idx-h">Highland, Illinois, 2000, 342</p></div>
+<div class="idx-entry"><p class="idx-h">Hill-Norton, 485</p></div>
+<div class="idx-entry"><p class="idx-h">Hillenkoetter, R. H., 385</p></div>
+<div class="idx-entry"><p class="idx-h">Himes, Jim, 284, 287, 323</p></div>
+<div class="idx-entry"><p class="idx-h">Hoover, J. Edgar, 373</p></div>
+<div class="idx-entry"><p class="idx-h">House Armed Services Committee, 282, 283</p></div>
+<div class="idx-entry"><p class="idx-h">House Oversight Committee, 89, 107, 166, 205, 235, 303</p></div>
+<div class="idx-entry"><p class="idx-h">House Permanent Select Committee on Intelligence, 282, 284, 323</p></div>
+<div class="idx-entry"><p class="idx-h">HPSCI. <em>See</em> House Permanent Select Committee on Intelligence</p></div>
+<div class="idx-entry"><p class="idx-h">Hu Shaoheng, 135</p></div>
+<div class="idx-entry"><p class="idx-h">Hunsaker, Jerome, 43</p></div>
+<div class="idx-entry"><p class="idx-h">Hynek, J. Allen, 31, 38, 39, 56, 65, 350, 416</p></div>
+<h2 class="idx-letter" id="L-I">I</h2>
+<div class="idx-entry"><p class="idx-h">IC. <em>See</em> Intelligence Community</p></div>
+<div class="idx-entry"><p class="idx-h">IC IG. <em>See</em> Intelligence Community Inspector General</p></div>
+<div class="idx-entry"><p class="idx-h">Ilyumzhinov, Kirsan, 498</p></div>
+<div class="idx-entry"><p class="idx-h">Inman, Bobby Ray, 389</p></div>
+<div class="idx-entry"><p class="idx-h">Inouye, Daniel, 144</p></div>
+<div class="idx-entry"><p class="idx-h">Intelligence Authorization Act, 174, 357</p></div>
+<div class="idx-entry"><p class="idx-h">Intelligence Community</p><p class="idx-sub">2021 ODNI preliminary assessment, 176, 178, 179, 180</p><p class="idx-sub">AARO coordination role, 199, 200, 363</p><p class="idx-sub">disinformation and surveillance operations, 63</p><p class="idx-sub">oversight failures and inspector general findings, 235, 264, 273, 274, 287, 315, 321</p><p class="idx-sub">Special Access Program oversight structures, 353, 355, 357</p><p class="idx-sub">UAP Task Force and interagency data sharing, 175, 181</p></div>
+<div class="idx-entry"><p class="idx-h">Intelligence Community Inspector General, 273, 274, 287, 315</p></div>
+<div class="idx-entry"><p class="idx-h">Ishiba, Shigeru, 490</p></div>
+<h2 class="idx-letter" id="L-J">J</h2>
+<div class="idx-entry"><p class="idx-h">Jacobs, Robert, 387</p></div>
+<div class="idx-entry"><p class="idx-h">Jafari, Parviz, 481</p></div>
+<div class="idx-entry"><p class="idx-h">Janini, Jo&atilde;o B. M., 499</p></div>
+<div class="idx-entry"><p class="idx-h">Jin Fan, 126</p></div>
+<div class="idx-entry"><p class="idx-h">Johnson, Douglas Dean, 231</p></div>
+<div class="idx-entry"><p class="idx-h">Johnson, Mike, 283</p></div>
+<div class="idx-entry"><p class="idx-h">Johnson, Nicholas, 462</p></div>
+<div class="idx-entry"><p class="idx-h">Justice, Steve, 6, 90, 465</p></div>
+<h2 class="idx-letter" id="L-K">K</h2>
+<div class="idx-entry"><p class="idx-h">Kaku, Michio, 469</p></div>
+<div class="idx-entry"><p class="idx-h">Kalbach, Fred, 40</p></div>
+<div class="idx-entry"><p class="idx-h">Kean, Leslie, 12, 160, 165, 298</p></div>
+<div class="idx-entry"><p class="idx-h">Kendall, Frank, III, 403</p></div>
+<div class="idx-entry"><p class="idx-h">Keyhoe, Donald, 49, 51, 54, 384</p></div>
+<div class="idx-entry"><p class="idx-h">Kimball, Dan A., 376</p></div>
+<div class="idx-entry"><p class="idx-h">Kirby, John, 23</p></div>
+<div class="idx-entry"><p class="idx-h">Kiriakou, John, 202, 203</p></div>
+<div class="idx-entry"><p class="idx-h">Kirkpatrick, Sean, 420</p><p class="idx-sub">as first AARO director, 172, 187, 201, 213</p><p class="idx-sub">departure and Oak Ridge employment, 193, 230</p><p class="idx-sub">disputes with witnesses and critics, 202, 203, 204, 205, 206, 213, 228</p><p class="idx-sub">physics analysis of UAP speeds, 86, 87</p><p class="idx-sub">skeptical reframing of UAP, 181, 228</p><p class="idx-sub">statements on metallic spheres, 209, 215, 220, 330, 331</p><p class="idx-sub">technical advisers and STAG, 229, 231</p><p class="idx-sub">Wall Street Journal disinformation account, 222, 223</p></div>
+<div class="idx-entry"><p class="idx-h">Kirtland Air Force Base, 64</p></div>
+<div class="idx-entry"><p class="idx-h">Knapp, George, 119, 153, 166, 167, 231</p></div>
+<div class="idx-entry"><p class="idx-h">Knuth, Kevin H., 81, 83, 86, 87, 308</p></div>
+<div class="idx-entry"><p class="idx-h">Kobitz, Nat, 396</p></div>
+<div class="idx-entry"><p class="idx-h">Kona Blue, 148, 150, 151, 153, 157</p></div>
+<div class="idx-entry"><p class="idx-h">KONA BLUE. <em>See</em> Kona Blue</p></div>
+<div class="idx-entry"><p class="idx-h">Kosloski, Jon, 197, 198, 200, 325, 423</p></div>
+<div class="idx-entry"><p class="idx-h">Krishnamoorthi, Raja, 185</p></div>
+<h2 class="idx-letter" id="L-L">L</h2>
+<div class="idx-entry"><p class="idx-h">La Paz, Lincoln, 40, 41, 450</p></div>
+<div class="idx-entry"><p class="idx-h">Lacatski, James, 145, 148, 422</p><p class="idx-seealso"><em>See also</em> AAWSAP; Defense Intelligence Agency</p></div>
+<div class="idx-entry"><p class="idx-h">Lamothe, Dan, 221</p></div>
+<div class="idx-entry"><p class="idx-h">Langley Air Force Base, 14, 207, 306, 325</p></div>
+<div class="idx-entry"><p class="idx-h">LaPaz. <em>See</em> La Paz, Lincoln</p></div>
+<div class="idx-entry"><p class="idx-h">Laslo, Matt, 18, 20, 272, 287</p></div>
+<div class="idx-entry"><p class="idx-h">Leavitt, Karoline, 18</p></div>
+<div class="idx-entry"><p class="idx-h">Li Suolin, 135</p></div>
+<div class="idx-entry"><p class="idx-h">Liberation Times, 283, 286</p></div>
+<div class="idx-entry"><p class="idx-h">Liebermann, Oren, 221</p></div>
+<div class="idx-entry"><p class="idx-h">Liu Bingxiang, 127</p></div>
+<div class="idx-entry"><p class="idx-h">Liu Ming, 135</p></div>
+<div class="idx-entry"><p class="idx-h">Liu Zhusheng, 124</p></div>
+<div class="idx-entry"><p class="idx-h">Lockheed Martin, 6, 90, 93, 105, 146, 153, 163</p></div>
+<div class="idx-entry"><p class="idx-h">Loeb, Avi, 86, 87, 103, 104, 137, 468</p></div>
+<div class="idx-entry"><p class="idx-h">Logan, Lenval, 298</p></div>
+<div class="idx-entry"><p class="idx-h">Los Alamos, 35, 40</p></div>
+<div class="idx-entry"><p class="idx-h">Low, Robert, 60</p></div>
+<div class="idx-entry"><p class="idx-h">Luna, Anna Paulina, 191, 192, 205, 265, 314, 318, 322, 325, 447</p></div>
+<div class="idx-entry"><p class="idx-h">Lute, Jane Holl, 151, 152, 153</p></div>
+<h2 class="idx-letter" id="L-M">M</h2>
+<div class="idx-entry"><p class="idx-h">MacArthur, Douglas, 386</p></div>
+<div class="idx-entry"><p class="idx-h">Mace, Nancy, 231</p></div>
+<div class="idx-entry"><p class="idx-h">Machimura, Nobutaka, 491</p></div>
+<div class="idx-entry"><p class="idx-h">Mack, John E., 313, 336</p></div>
+<div class="idx-entry"><p class="idx-h">Maestas, Aaron, 466</p></div>
+<div class="idx-entry"><p class="idx-h">Maguire, Larry, 296</p></div>
+<div class="idx-entry"><p class="idx-h">Maher, Bill, 323</p></div>
+<div class="idx-entry"><p class="idx-h">Malmgren, Harald, xv, 408</p></div>
+<div class="idx-entry"><p class="idx-h">Malmgren, Pippa, 445</p></div>
+<div class="idx-entry"><p class="idx-h">Malmstrom. <em>See</em> Malmstrom Air Force Base</p></div>
+<div class="idx-entry"><p class="idx-h">Malmstrom Air Force Base, 57, 62, 119, 212, 225</p></div>
+<div class="idx-entry"><p class="idx-h">Maltsev, Igor, 121, 495</p></div>
+<div class="idx-entry"><p class="idx-h">Manhattan Project, 220</p><p class="idx-seealso"><em>See also</em> Los Alamos; Oak Ridge National Laboratory</p></div>
+<div class="idx-entry"><p class="idx-h">Mansmann, Florenz, 387</p></div>
+<div class="idx-entry"><p class="idx-h">Mantell, Thomas, 34</p></div>
+<div class="idx-entry"><p class="idx-h">Martinez, Luis, 221</p></div>
+<div class="idx-entry"><p class="idx-h">McCasland, Neil, 163, 323</p></div>
+<div class="idx-entry"><p class="idx-h">McConnell, Kirk, 6, 182, 190, 201, 212, 237, 444</p></div>
+<div class="idx-entry"><p class="idx-h">McConnell, Mitch, 283, 286</p></div>
+<div class="idx-entry"><p class="idx-h">McDonald, James, 40</p></div>
+<div class="idx-entry"><p class="idx-h">McMaster, H. R., 409</p></div>
+<div class="idx-entry"><p class="idx-h">Mellon, Christopher, 11, 303, 400</p><p class="idx-sub">author&rsquo;s interviews and encounters with, 7, 298</p><p class="idx-sub">critique of AARO historical report, 214, 217, 220, 221</p><p class="idx-sub">critique of AARO office structure, 183</p><p class="idx-sub">on mystery drone incursions, 15, 21</p><p class="idx-sub">on sensor networks and Air Force silence, 76, 88, 93, 97, 108, 109, 168, 223, 311, 312</p><p class="idx-sub">on withholding of evidence from Congress, 206, 263, 264, 326</p><p class="idx-sub">Pentagon and Senate intelligence career, 5, 158, 159, 160</p><p class="idx-sub">role in 2017 disclosure effort, 155, 160, 161, 167, 168, 302</p><p class="idx-sub">SAPOC and oversight access, 10, 11, 362</p></div>
+<div class="idx-entry"><p class="idx-h">Mellon, Hunter, 15</p></div>
+<div class="idx-entry"><p class="idx-h">Menzel, Donald, 54</p></div>
+<div class="idx-entry"><p class="idx-h">Michels, Jesse, 64, 212</p></div>
+<div class="idx-entry"><p class="idx-h">Mijic, Roko, 289</p></div>
+<div class="idx-entry"><p class="idx-h">Milley, Mark, 406</p></div>
+<div class="idx-entry"><p class="idx-h">Mirage Men, 63, 64, 65, 66</p></div>
+<div class="idx-entry"><p class="idx-h">Mitchell, Edgar, 464</p></div>
+<div class="idx-entry"><p class="idx-h">Moore, Charles, 68</p></div>
+<div class="idx-entry"><p class="idx-h">Moskowitz, Jared, 206, 265, 285, 319</p></div>
+<h2 class="idx-letter" id="L-N">N</h2>
+<div class="idx-entry"><p class="idx-h">NACA, 43</p></div>
+<div class="idx-entry"><p class="idx-h">NASA, 43, 87, 188, 207, 208, 209, 215</p></div>
+<div class="idx-entry"><p class="idx-h">National Advisory Committee for Aeronautics. <em>See</em> NACA</p></div>
+<div class="idx-entry"><p class="idx-h">National Defense Authorization Act, 90, 169, 212, 215, 218, 282, 284, 285, 290, 320</p></div>
+<div class="idx-entry"><p class="idx-h">National Institute for Discovery Science, 302</p><p class="idx-seealso"><em>See also</em> Bigelow, Robert; Skinwalker Ranch; AAWSAP</p></div>
+<div class="idx-entry"><p class="idx-h">National Investigations Committee on Aerial Phenomena, 54</p></div>
+<div class="idx-entry"><p class="idx-h">National Security Agency, 65, 133, 189, 197, 363</p></div>
+<div class="idx-entry"><p class="idx-h">NDAA. <em>See</em> National Defense Authorization Act</p></div>
+<div class="idx-entry"><p class="idx-h">Nell, Karl, 268, 269, 270, 274, 275, 276, 280, 281, 282, 407</p></div>
+<div class="idx-entry"><p class="idx-h">Nelson, Bill, 207</p></div>
+<div class="idx-entry"><p class="idx-h">New York Times. <em>See</em> The New York Times</p></div>
+<div class="idx-entry"><p class="idx-h">NewsNation, 221, 237, 320, 324</p></div>
+<div class="idx-entry"><p class="idx-h">NICAP. <em>See</em> National Investigations Committee on Aerial Phenomena</p></div>
+<div class="idx-entry"><p class="idx-h">NIDS. <em>See</em> National Institute for Discovery Science</p></div>
+<div class="idx-entry"><p class="idx-h">Nimitz. <em>See</em> Nimitz encounter</p></div>
+<div class="idx-entry"><p class="idx-h">Nimitz encounter, 72</p><p class="idx-sub">AARO acknowledgment and omission, 194, 219, 310</p><p class="idx-sub">expert and pilot analysis, 6</p><p class="idx-sub">flight characteristics and physics implications, 77, 83, 85</p><p class="idx-sub">missing and withheld data, 108, 109</p><p class="idx-sub">multi-sensor data and corroboration, 10, 89, 135, 199</p><p class="idx-sub">radar jamming and FLIR1 video, 78, 80</p></div>
+<div class="idx-entry"><p class="idx-h">Nolan, Garry, 105, 106, 107, 164, 298, 302, 303, 470</p></div>
+<div class="idx-entry"><p class="idx-h">NORAD, 15, 19, 23, 93, 161, 168, 217, 311</p></div>
+<div class="idx-entry"><p class="idx-h">Norman, Lewis S., 51</p></div>
+<div class="idx-entry"><p class="idx-h">Norquist, David, 174, 236</p></div>
+<div class="idx-entry"><p class="idx-h">North American Aerospace Defense Command. <em>See</em> NORAD</p></div>
+<div class="idx-entry"><p class="idx-h">NSA. <em>See</em> National Security Agency</p></div>
+<div class="idx-entry"><p class="idx-h">Nuccetelli, Jeffrey, 306, 325</p></div>
+<div class="idx-entry"><p class="idx-h">Nye, Bill, 84</p></div>
+<h2 class="idx-letter" id="L-O">O</h2>
+<div class="idx-entry"><p class="idx-h">Oak Ridge National Laboratory, 230</p></div>
+<div class="idx-entry"><p class="idx-h">Obama, Barack, 203, 317, 370</p></div>
+<div class="idx-entry"><p class="idx-h">Oberth, Hermann, 10, 452</p></div>
+<div class="idx-entry"><p class="idx-h">ODNI. <em>See</em> Office of the Director of National Intelligence</p></div>
+<div class="idx-entry"><p class="idx-h">Office of the Director of National Intelligence, 5, 96, 169, 176, 178, 179, 180, 223, 235, 310, 311</p></div>
+<div class="idx-entry"><p class="idx-h">O&rsquo;Toole, Tara, 151, 152, 434</p></div>
+<h2 class="idx-letter" id="L-P">P</h2>
+<div class="idx-entry"><p class="idx-h">Page, Thornton, 52</p></div>
+<div class="idx-entry"><p class="idx-h">Pais, Salvatore, 93, 94, 95</p></div>
+<div class="idx-entry"><p class="idx-h">Pasulka, Diana Walsh, 12, 298, 472</p></div>
+<div class="idx-entry"><p class="idx-h">Pearl Harbor, 20, 326</p></div>
+<div class="idx-entry"><p class="idx-h">Peings, Yannick, 103</p></div>
+<div class="idx-entry"><p class="idx-h">Peirce, Charles Sanders, 289</p></div>
+<div class="idx-entry"><p class="idx-h">Pervukhin, Mikhail, 114</p></div>
+<div class="idx-entry"><p class="idx-h">Phillips, Tim, 73, 74, 109, 193, 194, 195, 196, 199, 221, 310, 318</p></div>
+<div class="idx-entry"><p class="idx-h">Pituffik Space Base, 91</p></div>
+<div class="idx-entry"><p class="idx-h">Podesta, John, 163, 302, 323, 429</p></div>
+<div class="idx-entry"><p class="idx-h">Politico, 156, 160, 193</p></div>
+<div class="idx-entry"><p class="idx-h">POLITICO. <em>See</em> Politico</p></div>
+<div class="idx-entry"><p class="idx-h">Powell, Robert, 109, 214, 344</p></div>
+<div class="idx-entry"><p class="idx-h">Project Blue Book</p><p class="idx-sub">AARO&rsquo;s incomplete archive review, 216, 217</p><p class="idx-sub">comparison to foreign UFO secrecy, 115, 116, 129</p><p class="idx-sub">Condon Committee and termination, 58, 59, 133</p><p class="idx-sub">Hynek and the party line, 56</p><p class="idx-sub">origins and founding, 48</p><p class="idx-sub">public-relations and debunking function, 23, 51, 53, 70, 314</p><p class="idx-sub">Ruppelt&rsquo;s leadership and scientific intent, 54</p><p class="idx-sub">suppression of anomalous cases, 55, 57, 58</p><p class="idx-seealso"><em>See also</em> Project Sign; Project Grudge; Robertson Panel; Condon Committee; Air Technical Intelligence Center</p></div>
+<div class="idx-entry"><p class="idx-h">Project Grudge, 31, 39, 42, 44, 48, 70, 191, 216, 217</p><p class="idx-seealso"><em>See also</em> Project Sign; Project Blue Book</p></div>
+<div class="idx-entry"><p class="idx-h">Project Mogul, 68, 69</p><p class="idx-seealso"><em>See also</em> Roswell incident, 1947; Roswell Report</p></div>
+<div class="idx-entry"><p class="idx-h">Project MOGUL. <em>See</em> Project Mogul</p></div>
+<div class="idx-entry"><p class="idx-h">Project Saucer, 33</p></div>
+<div class="idx-entry"><p class="idx-h">Project SAUCER. <em>See</em> Project Saucer</p></div>
+<div class="idx-entry"><p class="idx-h">Project Sign, 31, 33, 34, 37, 38, 39, 42, 70, 114, 216</p><p class="idx-seealso"><em>See also</em> Project Grudge; Project Blue Book; Estimate of the Situation</p></div>
+<div class="idx-entry"><p class="idx-h">Project SIGN. <em>See</em> Project Sign</p></div>
+<div class="idx-entry"><p class="idx-h">Project STAR GATE. <em>See</em> Project Stargate</p></div>
+<div class="idx-entry"><p class="idx-h">Project Stargate, 149</p></div>
+<div class="idx-entry"><p class="idx-h">Project Twinkle, 41, 42</p></div>
+<div class="idx-entry"><p class="idx-h">Puthoff, Harold (Hal), 145, 146, 147, 149, 164, 302, 305, 351, 474</p></div>
+<h2 class="idx-letter" id="L-Q">Q</h2>
+<div class="idx-entry"><p class="idx-h">Qian Xuesen, 123</p></div>
+<h2 class="idx-letter" id="L-R">R</h2>
+<div class="idx-entry"><p class="idx-h">Randi, James, vi</p></div>
+<div class="idx-entry"><p class="idx-h">Ratcliffe, John, 398</p></div>
+<div class="idx-entry"><p class="idx-h">Reagan, Ronald, 369</p></div>
+<div class="idx-entry"><p class="idx-h">Records Disposal Act, 37</p></div>
+<div class="idx-entry"><p class="idx-h">Reed, Jack, 15</p></div>
+<div class="idx-entry"><p class="idx-h">Reid, Harry, 144, 145, 157, 214, 433</p></div>
+<div class="idx-entry"><p class="idx-h">Rich, Ben, 457</p></div>
+<div class="idx-entry"><p class="idx-h">Robertson Panel, xiv, 23, 31, 49, 52, 62, 70</p><p class="idx-seealso"><em>See also</em> Project Blue Book; Central Intelligence Agency</p></div>
+<div class="idx-entry"><p class="idx-h">Rogan, Joe, 168, 236, 288, 304, 350</p></div>
+<div class="idx-entry"><p class="idx-h">Rogers, Mike, 283</p></div>
+<div class="idx-entry"><p class="idx-h">Romney, Mitt, 436</p></div>
+<div class="idx-entry"><p class="idx-h">Roswell, 68, 220, 332, 338</p></div>
+<div class="idx-entry"><p class="idx-h">Roswell incident. <em>See</em> Roswell incident, 1947</p></div>
+<div class="idx-entry"><p class="idx-h">Roswell incident, 1947, 69</p><p class="idx-seealso"><em>See also</em> Roswell; Roswell Report; Project Mogul</p></div>
+<div class="idx-entry"><p class="idx-h">Roswell Report, 68</p><p class="idx-seealso"><em>See also</em> Roswell incident, 1947; Project Mogul</p></div>
+<div class="idx-entry"><p class="idx-h">Rounds, Mike, 266, 270, 272, 273, 282, 285, 320</p></div>
+<div class="idx-entry"><p class="idx-h">Rubio, Marco, 5, 25, 161, 174, 183, 267, 270, 441</p></div>
+<div class="idx-entry"><p class="idx-h">Ruppelt, Edward James, 37, 38, 39, 42, 47, 48, 53, 54, 55, 216, 217, 414</p></div>
+<div class="idx-entry"><p class="idx-h">Ryder, James, 153</p></div>
+<h2 class="idx-letter" id="L-S">S</h2>
+<div class="idx-entry"><p class="idx-h">Sagan, Carl, 2, 84</p></div>
+<div class="idx-entry"><p class="idx-h">Salas, Robert, 212, 213, 226, 405</p></div>
+<div class="idx-entry"><p class="idx-h">Samford, John A., 49, 50, 378</p></div>
+<div class="idx-entry"><p class="idx-h">Sancorp Consulting, 182, 210</p></div>
+<div class="idx-entry"><p class="idx-h">SAPOC. <em>See</em> Special Access Program Oversight Committee</p></div>
+<div class="idx-entry"><p class="idx-h">Sarbacher, Robert I., 388</p></div>
+<div class="idx-entry"><p class="idx-h">SASC. <em>See</em> Senate Armed Services Committee</p></div>
+<div class="idx-entry"><p class="idx-h">Saturday Evening Post, 44</p></div>
+<div class="idx-entry"><p class="idx-h">Schiff, Adam, 172, 264, 438</p></div>
+<div class="idx-entry"><p class="idx-h">Schogol, Jeff, 221</p></div>
+<div class="idx-entry"><p class="idx-h">Schumer, Chuck, 25, 226, 266, 270, 272, 274, 282, 283, 285, 315</p></div>
+<div class="idx-entry"><p class="idx-h">Scientific Coalition for UAP Studies, 97, 104, 173, 197, 214, 299, 300, 301</p></div>
+<div class="idx-entry"><p class="idx-h">SCU. <em>See</em> Scientific Coalition for UAP Studies</p></div>
+<div class="idx-entry"><p class="idx-h">Senate Armed Services Committee, 15, 19, 167, 181, 182</p></div>
+<div class="idx-entry"><p class="idx-h">Senate Select Committee on Intelligence, 98, 158, 159, 167</p></div>
+<div class="idx-entry"><p class="idx-h">Shalett, Sidney, 44, 45, 46</p></div>
+<div class="idx-entry"><p class="idx-h">Shannon, Oke, 471</p></div>
+<div class="idx-entry"><p class="idx-h">Sheehy, James, 95</p></div>
+<div class="idx-entry"><p class="idx-h">Shen Yingjia, 135</p></div>
+<div class="idx-entry"><p class="idx-h">Shostak, Seth, 83</p></div>
+<div class="idx-entry"><p class="idx-h">Sinkkonen, Janne, 101</p></div>
+<div class="idx-entry"><p class="idx-h">Skinwalker Ranch, 147</p></div>
+<div class="idx-entry"><p class="idx-h">Skunk Works, 6, 90, 105, 163, 164</p></div>
+<div class="idx-entry"><p class="idx-h">Slaight, Jim, 79</p></div>
+<div class="idx-entry"><p class="idx-h">Slayton, Donald, 458</p></div>
+<div class="idx-entry"><p class="idx-h">Smith, Chris, 17</p></div>
+<div class="idx-entry"><p class="idx-h">Sokolov, Boris, 119, 120, 166</p></div>
+<div class="idx-entry"><p class="idx-h">Sol Foundation, 105, 107, 270, 274, 280, 296, 298, 299</p></div>
+<div class="idx-entry"><p class="idx-h">Somanath, Sreedhara Panicker, 497</p></div>
+<div class="idx-entry"><p class="idx-h">Spaatz, Carl A., 45</p></div>
+<div class="idx-entry"><p class="idx-h">Special Access Program Oversight Committee, 10, 151, 152, 159, 362</p></div>
+<div class="idx-entry"><p class="idx-h">Spergel, David, 208</p></div>
+<div class="idx-entry"><p class="idx-h">SSCI. <em>See</em> Senate Select Committee on Intelligence</p></div>
+<div class="idx-entry"><p class="idx-h">Stansel, Arthur G., 381</p></div>
+<div class="idx-entry"><p class="idx-h">STAR GATE. <em>See</em> Project Stargate</p></div>
+<div class="idx-entry"><p class="idx-h">Stephenville. <em>See</em> Stephenville, Texas, 2008</p></div>
+<div class="idx-entry"><p class="idx-h">Stephenville, Texas, 2008, 104</p></div>
+<div class="idx-entry"><p class="idx-h">Stevens, Ted, 144, 427</p></div>
+<div class="idx-entry"><p class="idx-h">Stolyarov, Porfiri, 116, 117</p></div>
+<div class="idx-entry"><p class="idx-h">Strategic Air Command, 57, 58, 119, 226</p></div>
+<div class="idx-entry"><p class="idx-h">Stratton, Jay, 145, 173, 174, 175, 181, 190, 235, 236, 288, 344, 424</p></div>
+<div class="idx-entry"><p class="idx-h">Sullivan, Walter, 117</p></div>
+<div class="idx-entry"><p class="idx-h">Sun Shili, 487</p></div>
+<div class="idx-entry"><p class="idx-h">Symington, Fife, 340, 431</p></div>
+<h2 class="idx-letter" id="L-T">T</h2>
+<div class="idx-entry"><p class="idx-h">Teller, Edward, 451</p></div>
+<div class="idx-entry"><p class="idx-h">TEMPS, 225</p></div>
+<div class="idx-entry"><p class="idx-h">The Age of Disclosure, 178, 218, 223, 231, 236, 300, 311, 313, 344</p></div>
+<div class="idx-entry"><p class="idx-h">The Debrief, 184, 214, 221</p></div>
+<div class="idx-entry"><p class="idx-h">The Good Trouble Show, 212</p></div>
+<div class="idx-entry"><p class="idx-h">The New York Times, 117, 142, 156, 161, 163, 164, 167, 169, 201, 221, 302</p></div>
+<div class="idx-entry"><p class="idx-h">The Planetary Society, 84</p></div>
+<div class="idx-entry"><p class="idx-h">The Washington Post, 160, 221</p></div>
+<div class="idx-entry"><p class="idx-h">Thorne, David, 483</p></div>
+<div class="idx-entry"><p class="idx-h">Tikhonov, Arkadi, 117</p></div>
+<div class="idx-entry"><p class="idx-h">Tombaugh, Clyde, 40</p></div>
+<div class="idx-entry"><p class="idx-h">Trent, Evelyn, 60</p></div>
+<div class="idx-entry"><p class="idx-h">Trent, Paul, 61</p></div>
+<div class="idx-entry"><p class="idx-h">Tretyak, Ivan, 120, 121, 134</p></div>
+<div class="idx-entry"><p class="idx-h">Truman, Harry S., 366</p></div>
+<div class="idx-entry"><p class="idx-h">Trump, Donald, 228, 317</p></div>
+<div class="idx-entry"><p class="idx-h">Turner, Henry Kenneth, 480</p></div>
+<div class="idx-entry"><p class="idx-h">Turner, Mike, 283</p></div>
+<div class="idx-entry"><p class="idx-h">Twining, Nathan, 33, 45, 374</p></div>
+<h2 class="idx-letter" id="L-U">U</h2>
+<div class="idx-entry"><p class="idx-h">U.S. Air Force, 13, 14, 33, 50, 115, 207, 226, 311, 334</p></div>
+<div class="idx-entry"><p class="idx-h">UAP Disclosure Act, 226, 267, 268, 269, 274, 281, 282, 285, 286, 287, 310, 320, 323, 359</p></div>
+<div class="idx-entry"><p class="idx-h">UAP Task Force</p><p class="idx-sub">2021 ODNI assessment findings, 179</p><p class="idx-sub">author&rsquo;s encounters with members, 177, 191, 298, 300</p><p class="idx-sub">contradiction with AARO, 188, 189, 193, 199, 288</p><p class="idx-sub">establishment and mandate, 169, 174</p><p class="idx-sub">intake of foreign and legacy cases, 119</p><p class="idx-sub">interagency data-sharing approach, 175</p><p class="idx-sub">mission and methods, 173, 174</p><p class="idx-sub">Stratton&rsquo;s directorship, 173, 235, 269</p><p class="idx-seealso"><em>See also</em> AARO; AATIP; AAWSAP; AOIMSG</p></div>
+<div class="idx-entry"><p class="idx-h">UAPDA. <em>See</em> UAP Disclosure Act</p></div>
+<div class="idx-entry"><p class="idx-h">UAPTF. <em>See</em> UAP Task Force</p></div>
+<div class="idx-entry"><p class="idx-h">Underwood, Chad, ix, x, 78, 80</p></div>
+<div class="idx-entry"><p class="idx-h">Unidentified Aerial Phenomena Task Force. <em>See</em> UAP Task Force</p></div>
+<div class="idx-entry"><p class="idx-h">Unidentified Anomalous Phenomena Disclosure Act. <em>See</em> UAP Disclosure Act</p></div>
+<div class="idx-entry"><p class="idx-h">USS Nimitz. <em>See</em> Nimitz encounter</p></div>
+<h2 class="idx-letter" id="L-V">V</h2>
+<div class="idx-entry"><p class="idx-h">Vall&eacute;e, Jacques, 107, 115, 117, 312, 349, 350, 475</p></div>
+<div class="idx-entry"><p class="idx-h">Vandenberg. <em>See</em> Vandenberg Air Force Base</p></div>
+<div class="idx-entry"><p class="idx-h">Vandenberg Air Force Base, 37, 39, 306</p></div>
+<div class="idx-entry"><p class="idx-h">Vandenberg, Hoyt, 37</p></div>
+<div class="idx-entry"><p class="idx-h">VanHerck, Glen D., 20</p></div>
+<div class="idx-entry"><p class="idx-h">Varginha. <em>See</em> Varginha, Brazil, 1996</p></div>
+<div class="idx-entry"><p class="idx-h">Varginha, Brazil, 1996, 338</p></div>
+<div class="idx-entry"><p class="idx-h">VASCO, 100, 101, 102</p></div>
+<div class="idx-entry"><p class="idx-h">Velasco, Jean-Jacques, 492</p></div>
+<div class="idx-entry"><p class="idx-h">Villarroel, Beatriz, 100, 101, 102</p></div>
+<div class="idx-entry"><p class="idx-h">Vincent, Brandi, 221</p></div>
+<div class="idx-entry"><p class="idx-h">Vladimirov, Leonid, 114</p></div>
+<div class="idx-entry"><p class="idx-h">von Rennenkampff, Marik, 103</p></div>
+<h2 class="idx-letter" id="L-W">W</h2>
+<div class="idx-entry"><p class="idx-h">Walker, Eric A., 456</p></div>
+<div class="idx-entry"><p class="idx-h">Wall Street Journal, 222, 223, 225, 226</p></div>
+<div class="idx-entry"><p class="idx-h">Walsh, Brian, 161</p></div>
+<div class="idx-entry"><p class="idx-h">Wang Sichao, 124, 494</p></div>
+<div class="idx-entry"><p class="idx-h">Warrick, Joby, 160</p></div>
+<div class="idx-entry"><p class="idx-h">Washington Post. <em>See</em> The Washington Post</p></div>
+<div class="idx-entry"><p class="idx-h">Watters, Wesley, 101, 102</p></div>
+<div class="idx-entry"><p class="idx-h">Weinstein, Eric, 88, 304, 473</p></div>
+<div class="idx-entry"><p class="idx-h">West, Mick, vii, 73, 194, 196, 214, 289</p></div>
+<div class="idx-entry"><p class="idx-h">Weygandt, Jonathan, 392</p></div>
+<div class="idx-entry"><p class="idx-h">White, Dana, 156</p></div>
+<div class="idx-entry"><p class="idx-h">Whitted, John, 37</p></div>
+<div class="idx-entry"><p class="idx-h">Wicker, Roger, 283</p></div>
+<div class="idx-entry"><p class="idx-h">Wiggins, Alexandro C., 89, 410</p></div>
+<div class="idx-entry"><p class="idx-h">Wilson, Thomas R., 393</p></div>
+<div class="idx-entry"><p class="idx-h">Woolsey, James, 399</p></div>
+<div class="idx-entry"><p class="idx-h">World Chinese UFO Federation, 125, 126</p></div>
+<div class="idx-entry"><p class="idx-h">Wright-Patterson. <em>See</em> Wright-Patterson Air Force Base</p></div>
+<div class="idx-entry"><p class="idx-h">Wright-Patterson Air Force Base, 163, 323</p></div>
+<h2 class="idx-letter" id="L-Y">Y</h2>
+<div class="idx-entry"><p class="idx-h">Yankee Blue, 222, 223, 224</p></div>
+<h2 class="idx-letter" id="L-Z">Z</h2>
+<div class="idx-entry"><p class="idx-h">Zheng Dechun, 125</p></div>
+<div class="idx-entry"><p class="idx-h">Zigel, Felix, 115, 116</p></div>
+<div class="idx-entry"><p class="idx-h">Zurbuchen, Thomas, 208</p></div>
+<p class="idx-empty" id="idx-empty">No entries match that filter.</p>
+</div>
+</main>
+<footer class="foot">Back to <a href="/">the redirect home</a> &nbsp;&middot;&nbsp; <a href="/references/">references</a></footer>
+<script>
+(function(){
+  var q=document.getElementById('idx-filter');
+  var idx=document.getElementById('idx');
+  var entries=Array.prototype.slice.call(idx.querySelectorAll('.idx-entry'));
+  var letters=Array.prototype.slice.call(idx.querySelectorAll('.idx-letter'));
+  var count=document.getElementById('idx-count');
+  var empty=document.getElementById('idx-empty');
+  var total=456;
+  function apply(){
+    var v=q.value.trim().toLowerCase();
+    var shown=0;
+    for(var i=0;i<entries.length;i++){
+      var hit=!v||entries[i].textContent.toLowerCase().indexOf(v)!==-1;
+      entries[i].style.display=hit?'':'none';
+      if(hit)shown++;
+    }
+    for(var j=0;j<letters.length;j++){
+      var n=letters[j].nextElementSibling,vis=false;
+      while(n&&!n.classList.contains('idx-letter')){
+        if(n.classList.contains('idx-entry')&&n.style.display!=='none'){vis=true;break;}
+        n=n.nextElementSibling;
+      }
+      letters[j].style.display=vis?'':'none';
+    }
+    empty.style.display=shown?'none':'block';
+    count.textContent=v?(shown+' of '+total+' entries'):(total+' entries');
+  }
+  q.addEventListener('input',apply);
+})();
+</script>
+</body>
+</html>
