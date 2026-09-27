@@ -36,25 +36,45 @@ command -v jq >/dev/null 2>&1 || {
 
 TAB=$(printf '\t')
 
-# Shared jq definitions. choosers: bare keys with 2+ numbered sources.
-# sources($b): those sources in numeric order, plus the bare entry when its URL
-# is not already one of them, so no existing destination becomes unreachable.
+# Shared jq definitions. sources($b): numbered sources in order, plus the bare
+# entry when its URL is not among them; sources sharing a URL merge into one
+# entry whose .label lists every key. choosers: bare keys with 2+ numbered
+# sources that still lead to 2+ distinct URLs.
+# cite: citation text to HTML. URLs, bare lowercase domains on known TLDs,
+# citation breaks after a URL and _italics_ are marked with control-char
+# sentinels, the text is @html-escaped, then the sentinels become markup.
 # shellcheck disable=SC2016 # $names are jq variables, expanded by jq not the shell
 JQ_DEFS='
-def choosers:
-	[keys[] | select(test("\\.")) | split(".")[0]]
-	| group_by(.) | map(select(length >= 2) | {(.[0]): true}) | add // {};
 def sources($b):
 	. as $r
 	| [to_entries[] | select(.key | startswith($b + "."))]
 	| sort_by(.key | split(".")[1] | tonumber) as $kids
-	| $kids + (if ([$kids[].value.url] | index($r[$b].url)) then [] else [{key: $b, value: $r[$b]}] end);
+	| $kids + (if ([$kids[].value.url] | index($r[$b].url)) then [] else [{key: $b, value: $r[$b]}] end)
+	| reduce .[] as $e ([];
+		(map(.value.url) | index($e.value.url)) as $i
+		| if $i then .[$i].label += [$e.key] else . + [$e + {label: [$e.key]}] end);
+def choosers:
+	. as $r
+	| [keys[] | select(test("\\.")) | split(".")[0]] | group_by(.) | map(select(length >= 2) | .[0])
+	| map(. as $b | select($r | sources($b) | length >= 2) | {($b): true}) | add // {};
 def hostpath:
 	sub("^[a-zA-Z][a-zA-Z0-9+.-]*://"; "") as $bare
 	| [($bare | sub("/.*$"; "")), (if ($bare | test("/")) then ($bare | sub("^[^/]+"; "")) else "" end)];
 def destspans:
 	hostpath as [$h, $p]
 	| "<span class=\"host\">" + ($h | @html) + "</span><span class=\"path\">" + ($p | @html) + "</span>";
+def cite:
+	gsub("(?<u>https?://[^\\s]+?|(?<![\\w@/.:-])(?:[a-z0-9-]+\\.)+(?:com|org|gov|mil|net|edu|app|int|cn|uk)(?:/[^\\s]*?)?)(?<p>[.,;:]*)(?=\\s|$)"; "\u0002\(.u)\u0003\(.p)")
+	| gsub("\u0002(?<u>[^\u0003(]*)\\)\u0003"; "\u0002\(.u)\u0003)")
+	| gsub("\u0002(?<u>[^\u0003]*)\u0003"; "\u0002\(.u | gsub("_"; "\u0004"))\u0003")
+	| gsub("\u0003(?<p>[.;]?) (?=[A-Z\"\u201c\u2018])"; "\u0003\(.p)\u0001")
+	| gsub("(?<!\\w)_(?<t>[^_\\s\u0001\u0002][^_\u0001\u0002]*?)_(?!\\w)"; "\u0005\(.t)\u0006")
+	| @html
+	| gsub("\u0002(?<u>[^\u0003]*)\u0003"; "<span class=\"u\">"
+		+ (.u | gsub("(?<c>(?<!/)/(?!/)|\\?|&amp;|(?<!&)#)"; "<wbr>\(.c)") | gsub("="; "=<wbr>"))
+		+ "</span>")
+	| gsub("\u0004"; "_") | gsub("\u0005"; "<em>") | gsub("\u0006"; "</em>")
+	| "<span class=\"cn\">" + gsub("\u0001"; "</span> <span class=\"cn\">") + "</span>";
 '
 
 jq -r "$JQ_DEFS"'
@@ -150,11 +170,11 @@ jq -r "$JQ_DEFS"'
 	| ($r | sources($b)) as $src
 	| [ (("v1." + $b) | gsub("\\."; "/")),
 	    ($b | @html | @base64),
-	    (($r[$b].description // "") | @html | @base64),
+	    (($r[$b].description // "") | cite | @base64),
 	    ([$src[] | "<li><a class=\"opt\" href=\"" + (.value.url | @html) + "\"><span class=\"k\">"
-	        + (.key | @html) + "</span>"
+	        + (.label | map(@html) | join("<br>")) + "</span>"
 	        + (if (.value.description // "") != "" and .value.description != $r[$b].description
-	           then "<span class=\"cite\">" + (.value.description | @html) + "</span>" else "" end)
+	           then "<span class=\"cite\">" + (.value.description | cite) + "</span>" else "" end)
 	        + "<span class=\"dest\">" + (.value.url | destspans)
 	        + "</span></a></li>"] | join("") | @base64),
 	    ($src | length) ]
@@ -187,7 +207,9 @@ body{font-family:var(--sans);color:var(--ink);line-height:1.5;background-color:v
 .eyebrow{font-family:var(--mono);font-size:.7rem;letter-spacing:.24em;text-transform:uppercase;color:var(--faint);margin-bottom:1.1rem}
 .h{font-size:clamp(1.45rem,4vw,1.95rem);font-weight:600;letter-spacing:-.01em;max-width:42rem}
 .rule{width:48px;height:3px;background:var(--ink);margin:1.4rem 0}
-.desc{font-size:.95rem;line-height:1.62;color:var(--muted);max-width:42rem;overflow-wrap:break-word}
+.desc{font-size:1rem;line-height:1.65;color:#1a1a1a;max-width:40rem;overflow-wrap:break-word}
+.cn{display:block}.cn+.cn{margin-top:.55em}
+.u{font-family:var(--mono);font-size:.84em;font-weight:400;color:#555552;overflow-wrap:anywhere}
 .opts{list-style:none;margin-top:1.6rem;border-top:1px solid var(--line)}
 .opt{display:grid;grid-template-columns:5.5rem minmax(0,1fr);gap:.35rem 1rem;align-items:start;padding:1.1rem .25rem;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink);transition:background .15s ease}
 .opt:hover,.opt:focus-visible{background:var(--paper)}
@@ -195,7 +217,7 @@ body{font-family:var(--sans);color:var(--ink);line-height:1.5;background-color:v
 .opt:hover .k,.opt:focus-visible .k{background:var(--ink);color:#fff}
 .k{grid-row:span 2}
 .cite,.dest{grid-column:2}
-.cite{font-size:.98rem;line-height:1.45;font-weight:500;overflow-wrap:break-word}
+.cite{font-size:.98rem;line-height:1.5;font-weight:500;overflow-wrap:break-word}
 .dest{font-family:var(--mono);font-size:.9rem;line-height:1.6;word-break:break-all}
 .dest::before{content:"↗";color:var(--ink);margin-right:.5rem}
 .dest .host{font-weight:700;color:var(--ink)}
@@ -463,7 +485,9 @@ body{
 .ref{font-family:var(--mono);font-size:.72rem;color:var(--ink);background:var(--bg);border:1px solid var(--ink);border-radius:0;padding:.32rem .55rem;justify-self:start;align-self:start;display:inline-flex;align-items:center;justify-content:center;min-width:3.5rem;text-align:center;white-space:nowrap;line-height:1.2;transition:background .15s ease,color .15s ease}
 .item:hover .ref{background:var(--ink);color:#fff}
 .body{min-width:0}
-.desc{color:#1a1a1a;font-size:.98rem;line-height:1.62;overflow-wrap:break-word}
+.desc{color:#1a1a1a;font-size:.98rem;line-height:1.62;max-width:40rem;overflow-wrap:break-word}
+.cn{display:block}.cn+.cn{margin-top:.55em}
+.u{font-family:var(--mono);font-size:.84em;font-weight:400;color:#555552;overflow-wrap:anywhere}
 .dest{display:block;width:fit-content;max-width:100%;margin-top:.6rem;font-family:var(--mono);font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:none}
 .dest+.dest{margin-top:.35rem}
 .dest::before{content:"\2197";color:var(--ink);margin-right:.45rem}
@@ -539,9 +563,9 @@ jq -r "$JQ_DEFS"'
 	| .[]
 	| .key as $k
 	| "<li class=\"item\"><div class=\"ref\">" + ($k | @html)
-		+ "</div><div class=\"body\"><p class=\"desc\">" + ((.value.description // "—") | @html) + "</p>"
+		+ "</div><div class=\"body\"><p class=\"desc\">" + ((.value.description // "—") | cite) + "</p>"
 		+ (if $cb[$k]
-			then ([$r | sources($k)[] | .key as $sk | .value | destlink($sk)] | join(""))
+			then ([$r | sources($k)[] | (.label | join(", ")) as $sk | .value | destlink($sk)] | join(""))
 			else (.value | destlink(null)) end)
 		+ "</div></li>"
 ' "$SRC" >>"$OUT/references/index.html"
