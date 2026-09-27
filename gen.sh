@@ -152,7 +152,10 @@ jq -r "$JQ_DEFS"'
 	    ($b | @html | @base64),
 	    (($r[$b].description // "") | @html | @base64),
 	    ([$src[] | "<li><a class=\"opt\" href=\"" + (.value.url | @html) + "\"><span class=\"k\">"
-	        + (.key | @html) + "</span><span class=\"dest\">" + (.value.url | destspans)
+	        + (.key | @html) + "</span>"
+	        + (if (.value.description // "") != "" and .value.description != $r[$b].description
+	           then "<span class=\"cite\">" + (.value.description | @html) + "</span>" else "" end)
+	        + "<span class=\"dest\">" + (.value.url | destspans)
 	        + "</span></a></li>"] | join("") | @base64),
 	    ($src | length) ]
 	| @tsv
@@ -186,10 +189,13 @@ body{font-family:var(--sans);color:var(--ink);line-height:1.5;background-color:v
 .rule{width:48px;height:3px;background:var(--ink);margin:1.4rem 0}
 .desc{font-size:.95rem;line-height:1.62;color:var(--muted);max-width:42rem;overflow-wrap:break-word}
 .opts{list-style:none;margin-top:1.6rem;border-top:1px solid var(--line)}
-.opt{display:grid;grid-template-columns:6.75rem minmax(0,1fr);gap:.3rem 1.2rem;align-items:start;padding:1rem .25rem;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink);transition:background .15s ease}
+.opt{display:grid;grid-template-columns:5.5rem minmax(0,1fr);gap:.35rem 1rem;align-items:start;padding:1.1rem .25rem;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink);transition:background .15s ease}
 .opt:hover,.opt:focus-visible{background:var(--paper)}
 .k{font-family:var(--mono);font-size:.72rem;border:1px solid var(--ink);padding:.32rem .55rem;justify-self:start;white-space:nowrap;line-height:1.2;transition:background .15s ease,color .15s ease}
 .opt:hover .k,.opt:focus-visible .k{background:var(--ink);color:#fff}
+.k{grid-row:span 2}
+.cite,.dest{grid-column:2}
+.cite{font-size:.98rem;line-height:1.45;font-weight:500;overflow-wrap:break-word}
 .dest{font-family:var(--mono);font-size:.9rem;line-height:1.6;word-break:break-all}
 .dest::before{content:"↗";color:var(--ink);margin-right:.5rem}
 .dest .host{font-weight:700;color:var(--ink)}
@@ -199,7 +205,7 @@ body{font-family:var(--sans);color:var(--ink);line-height:1.5;background-color:v
 .note a{color:var(--ink);text-decoration:underline;text-underline-offset:2px}
 a:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 .bar a:focus-visible{outline-color:#fff}
-@media(max-width:560px){.opt{grid-template-columns:minmax(0,1fr);gap:.5rem}}
+@media(max-width:560px){.opt{grid-template-columns:minmax(0,1fr);gap:.5rem}.k{grid-row:auto}.cite,.dest{grid-column:1}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
