@@ -20,6 +20,9 @@
 # The fields are base64-wrapped so a URL can never break the line protocol.
 # Never parse redirects.json with grep/sed: that loses the escaping guarantees.
 #
+# A multi-source note (bare "fn5" plus two or more "fn5.N" keys) gets a chooser
+# page at /v1/fn5/ listing every source instead of a redirect.
+#
 # Usage: ./gen.sh [redirects.json] [outDir]   (defaults: redirects.json, .)
 set -eu
 
@@ -33,8 +36,31 @@ command -v jq >/dev/null 2>&1 || {
 
 TAB=$(printf '\t')
 
-jq -r '
-	to_entries[]
+# Shared jq definitions. choosers: bare keys with 2+ numbered sources.
+# sources($b): those sources in numeric order, plus the bare entry when its URL
+# is not already one of them, so no existing destination becomes unreachable.
+# shellcheck disable=SC2016 # $names are jq variables, expanded by jq not the shell
+JQ_DEFS='
+def choosers:
+	[keys[] | select(test("\\.")) | split(".")[0]]
+	| group_by(.) | map(select(length >= 2) | {(.[0]): true}) | add // {};
+def sources($b):
+	. as $r
+	| [to_entries[] | select(.key | startswith($b + "."))]
+	| sort_by(.key | split(".")[1] | tonumber) as $kids
+	| $kids + (if ([$kids[].value.url] | index($r[$b].url)) then [] else [{key: $b, value: $r[$b]}] end);
+def hostpath:
+	sub("^[a-zA-Z][a-zA-Z0-9+.-]*://"; "") as $bare
+	| [($bare | sub("/.*$"; "")), (if ($bare | test("/")) then ($bare | sub("^[^/]+"; "")) else "" end)];
+def destspans:
+	hostpath as [$h, $p]
+	| "<span class=\"host\">" + ($h | @html) + "</span><span class=\"path\">" + ($p | @html) + "</span>";
+'
+
+jq -r "$JQ_DEFS"'
+	choosers as $cb
+	| to_entries[]
+	| select($cb[.key] | not)
 	| (("v1." + .key) | gsub("\\."; "/")) as $rel
 	| (.value.url | sub("^[a-zA-Z][a-zA-Z0-9+.-]*://"; "")) as $bare
 	| ($bare | sub("/.*$"; "")) as $host
@@ -113,6 +139,83 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 <p class="note">This page only forwards you to the source it cites. Your choice is saved in this browser only, nothing is sent anywhere. To switch the preview back on later, visit <a href="/">liesabove.app</a> or clear your browser data for this site.</p>
 </main>
 <script>(function(){var c=document.getElementById("skip");document.getElementById("go").addEventListener("click",function(e){if(c.checked){try{localStorage.setItem("la:skip","1")}catch(_){}}e.preventDefault();location.replace($ujson)})})()</script>
+</body>
+</html>
+EOF
+done
+
+jq -r "$JQ_DEFS"'
+	. as $r
+	| choosers | keys[] as $b
+	| ($r | sources($b)) as $src
+	| [ (("v1." + $b) | gsub("\\."; "/")),
+	    ($b | @html | @base64),
+	    (($r[$b].description // "") | @html | @base64),
+	    ([$src[] | "<li><a class=\"opt\" href=\"" + (.value.url | @html) + "\"><span class=\"k\">"
+	        + (.key | @html) + "</span><span class=\"dest\">" + (.value.url | destspans)
+	        + "</span></a></li>"] | join("") | @base64),
+	    ($src | length) ]
+	| @tsv
+' "$SRC" | while IFS="$TAB" read -r rel b_id b_desc b_opts n; do
+	uid=$(printf '%s' "$b_id" | base64 -d)
+	udesc=$(printf '%s' "$b_desc" | base64 -d)
+	uopts=$(printf '%s' "$b_opts" | base64 -d)
+	mkdir -p "$OUT/$rel"
+	cat >"$OUT/$rel/index.html" <<EOF
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" href="/favicon.png">
+<meta name="theme-color" content="#0b0b0c">
+<title>Choose a source · $uid · Lies Above</title>
+<style>
+:root{--ink:#0b0b0c;--bg:#fff;--paper:#f4f4f1;--line:#e4e4e0;--grid:#efefea;--muted:#666;--faint:#70706c;--mono:ui-monospace,'SF Mono',SFMono-Regular,'Cascadia Mono','Segoe UI Mono','Roboto Mono',Menlo,Consolas,monospace;--sans:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--sans);color:var(--ink);line-height:1.5;background-color:var(--bg);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:46px 46px;background-position:center top;display:flex;flex-direction:column;min-height:100vh;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+.bar{background:var(--ink);color:#fff;border-bottom:1px solid #000}
+.bar-inner{max-width:64rem;margin:0 auto;padding:.95rem clamp(1.25rem,5vw,3.5rem);display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.brand{font-family:var(--mono);font-weight:800;letter-spacing:.2em;font-size:.95rem;color:#fff;text-decoration:none}
+.bar-link{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:#b9b9b9;text-decoration:none;white-space:nowrap}
+.bar-link:hover{color:#fff}
+.wrap{flex:1;width:100%;max-width:64rem;margin:0 auto;background:var(--bg);border-inline:1px solid var(--line);padding:clamp(2.75rem,8vw,5rem) clamp(1.25rem,5vw,3.5rem);display:flex;flex-direction:column;justify-content:center}
+.eyebrow{font-family:var(--mono);font-size:.7rem;letter-spacing:.24em;text-transform:uppercase;color:var(--faint);margin-bottom:1.1rem}
+.h{font-size:clamp(1.45rem,4vw,1.95rem);font-weight:600;letter-spacing:-.01em;max-width:42rem}
+.rule{width:48px;height:3px;background:var(--ink);margin:1.4rem 0}
+.desc{font-size:.95rem;line-height:1.62;color:var(--muted);max-width:42rem;overflow-wrap:break-word}
+.opts{list-style:none;margin-top:1.6rem;border-top:1px solid var(--line)}
+.opt{display:grid;grid-template-columns:6.75rem minmax(0,1fr);gap:.3rem 1.2rem;align-items:start;padding:1rem .25rem;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink);transition:background .15s ease}
+.opt:hover,.opt:focus-visible{background:var(--paper)}
+.k{font-family:var(--mono);font-size:.72rem;border:1px solid var(--ink);padding:.32rem .55rem;justify-self:start;white-space:nowrap;line-height:1.2;transition:background .15s ease,color .15s ease}
+.opt:hover .k,.opt:focus-visible .k{background:var(--ink);color:#fff}
+.dest{font-family:var(--mono);font-size:.9rem;line-height:1.6;word-break:break-all}
+.dest::before{content:"↗";color:var(--ink);margin-right:.5rem}
+.dest .host{font-weight:700;color:var(--ink)}
+.dest .path{color:var(--faint)}
+.opt:hover .host,.opt:hover .path,.opt:focus-visible .host,.opt:focus-visible .path{text-decoration:underline}
+.note{margin-top:1.7rem;font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;line-height:1.6;color:var(--faint);max-width:42rem}
+.note a{color:var(--ink);text-decoration:underline;text-underline-offset:2px}
+a:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.bar a:focus-visible{outline-color:#fff}
+@media(max-width:560px){.opt{grid-template-columns:minmax(0,1fr);gap:.5rem}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="bar"><div class="bar-inner">
+<a class="brand" href="/">LIES ABOVE</a>
+<a class="bar-link" href="https://liesabove.com" target="_blank" rel="noopener" aria-label="liesabove.com (opens in a new tab)">liesabove.com <span aria-hidden="true">&#8599;</span></a>
+</div></header>
+<main class="wrap">
+<p class="eyebrow">Reference · $uid</p>
+<h1 class="h">This note cites $n sources. Choose one to visit.</h1>
+<div class="rule" aria-hidden="true"></div>
+<p class="desc">$udesc</p>
+<ul class="opts">$uopts</ul>
+<p class="note">Each source also has its own address, such as liesabove.app/v1/$uid/1, which goes straight to it. See <a href="/references/">all references</a>.</p>
+</main>
 </body>
 </html>
 EOF
@@ -355,8 +458,10 @@ body{
 .item:hover .ref{background:var(--ink);color:#fff}
 .body{min-width:0}
 .desc{color:#1a1a1a;font-size:.98rem;line-height:1.62;overflow-wrap:break-word}
-.dest{display:inline-block;max-width:100%;margin-top:.6rem;font-family:var(--mono);font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom;text-decoration:none}
+.dest{display:block;width:fit-content;max-width:100%;margin-top:.6rem;font-family:var(--mono);font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:none}
+.dest+.dest{margin-top:.35rem}
 .dest::before{content:"\2197";color:var(--ink);margin-right:.45rem}
+.dest .src{color:var(--muted);margin-right:.6rem}
 .dest .host{font-weight:700;color:var(--ink)}
 .dest .path{color:var(--faint)}
 .dest:hover .host,.dest:focus-visible .host{text-decoration:underline}
@@ -402,7 +507,7 @@ main:focus{outline:none}
 <p class="eyebrow">Reference Index</p>
 <h1 class="t">References</h1>
 <p class="s">Every source cited in <em>Lies Above</em>.</p>
-<p class="lead">Each QR code in the book points to one of the links below. Search to see exactly where a code leads before you scan it. Links open in a new tab.</p>
+<p class="lead">Each QR code in the book points to one of the links below. A note that cites several sources is listed once, with each source labelled by its own code. Search to see exactly where a code leads before you scan it. Links open in a new tab.</p>
 </div>
 <div class="search pad" role="search">
 <label class="sr-only" for="q">Search references by code, description, or URL</label>
@@ -412,23 +517,27 @@ main:focus{outline:none}
 <ul class="list pad" id="rows">
 EOF
 
-jq -r '
-	to_entries
+# A multi-source note renders as one row listing all its sources, each labelled
+# with its own key; its numbered child keys get no separate row.
+jq -r "$JQ_DEFS"'
+	def destlink($label):
+		"<a class=\"dest\" href=\"" + (.url | @html) + "\" title=\"" + (.url | @html)
+		+ "\" target=\"_blank\" rel=\"noopener nofollow\">"
+		+ (if $label then "<span class=\"src\">" + ($label | @html) + "</span>" else "" end)
+		+ (.url | destspans) + "<span class=\"sr-only\"> (opens in a new tab)</span></a>";
+	. as $r
+	| choosers as $cb
+	| to_entries
+	| map(select((.key | test("\\.")) and $cb[.key | split(".")[0]] | not))
 	| sort_by([ (.key | gsub("[0-9.]+"; "")), (.key | [scan("[0-9]+") | tonumber]) ])
 	| .[]
 	| .key as $k
-	| ((.value.description // "—")) as $d
-	| .value.url as $url
-	| ($url | sub("^[a-zA-Z][a-zA-Z0-9+.-]*://"; "")) as $bare
-	| ($bare | sub("/.*$"; "")) as $host
-	| (if ($bare | test("/")) then ($bare | sub("^[^/]+"; "")) else "" end) as $path
 	| "<li class=\"item\"><div class=\"ref\">" + ($k | @html)
-		+ "</div><div class=\"body\"><p class=\"desc\">" + ($d | @html)
-		+ "</p><a class=\"dest\" href=\"" + ($url | @html)
-		+ "\" title=\"" + ($url | @html)
-		+ "\" target=\"_blank\" rel=\"noopener nofollow\"><span class=\"host\">" + ($host | @html)
-		+ "</span><span class=\"path\">" + ($path | @html)
-		+ "</span><span class=\"sr-only\"> (opens in a new tab)</span></a></div></li>"
+		+ "</div><div class=\"body\"><p class=\"desc\">" + ((.value.description // "—") | @html) + "</p>"
+		+ (if $cb[$k]
+			then ([$r | sources($k)[] | .key as $sk | .value | destlink($sk)] | join(""))
+			else (.value | destlink(null)) end)
+		+ "</div></li>"
 ' "$SRC" >>"$OUT/references/index.html"
 
 cat >>"$OUT/references/index.html" <<'EOF'
