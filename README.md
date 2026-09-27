@@ -20,6 +20,9 @@ them to the cited source. `redirects.json` is the single source of truth,
 The key `fn5.1` is prefixed with the edition (`v1.`) to form the lookup ID
 `v1.fn5.1`, served at `/v1/fn5/1/`, so the printed QR URL `.../v1/fn5/1`
 resolves to it. Multi-source footnotes use dotted keys (`fn1026.1`, `fn1026.2`).
+When a footnote has two or more numbered sources, its bare path (`/v1/fn1026/`)
+is a chooser page listing every source instead of a redirect. If the bare key's
+own URL is not one of the numbered sources, the chooser lists it as well.
 
 ## How a redirect page works
 
@@ -39,7 +42,8 @@ Unknown references fall through to the branded `404.html`.
 
 The reference index at `/references/` lists every entry with its destination URL
 in plain text and a client-side search box, so a reader can see where a code
-leads before scanning it.
+leads before scanning it. A footnote that has a chooser page is listed once,
+with each source labelled by its own key.
 
 ## Build and deploy
 
